@@ -51,7 +51,8 @@ def load_rows():
         return []
     with open(T.CSV_PATH, encoding="utf-8-sig", newline="") as fh:
         rows = list(csv.reader(fh))
-    return rows[1:] if rows else []
+    data = rows[1:] if rows else []
+    return [r + [""] * (len(T.HEADERS) - len(r)) for r in data]
 
 
 def write_rows(rows):
@@ -80,6 +81,7 @@ def main():
     p.add_argument("--humor", required=True)
     p.add_argument("--subject", required=True)
     p.add_argument("--cookies", help="cookies file, if Instagram requires auth")
+    p.add_argument("--note", default="", help="8th sheet column, e.g. duplicate/blocked flags")
     p.add_argument("--no-download", action="store_true",
                    help="catalog only; use when the MP4 is already in ./videos/")
     a = p.parse_args()
@@ -104,7 +106,7 @@ def main():
 
     rows = load_rows()
     rows = [r for r in rows if not (r and r[0] == idx)]  # re-run is idempotent
-    rows.append([idx, a.url, desc, genre, ritual, humor, subject])
+    rows.append([idx, a.url, desc, genre, ritual, humor, subject, " ".join(a.note.split())])
     rows.sort(key=lambda r: r[0])
     write_rows(rows)
 
@@ -112,7 +114,7 @@ def main():
         sent = drive_upload.upload(dest)
         if sent is not None:
             print("Drive {}: {}".format("OK" if sent.get("ok") else "FAILED", sent))
-    row = ["{}".format(idx), a.url, desc, genre, ritual, humor, subject]
+    row = ["{}".format(idx), a.url, desc, genre, ritual, humor, subject, " ".join(a.note.split())]
     sent_csv = drive_upload.upload_sheet([T.HEADERS, row])
     if sent_csv is not None:
         print("Drive Sheet {}: {}".format("OK" if sent_csv.get("ok") else "FAILED", sent_csv))
