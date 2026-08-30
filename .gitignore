@@ -5,3 +5,4 @@ __pycache__/
 *.pyc
 cookies.txt
 drive_endpoint.txt
+scripts/ig_dm.py
