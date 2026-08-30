@@ -41,8 +41,17 @@ Add `--cookies cookies.txt` if Instagram requires authentication, or
 - **ז'אנר ויזואלי:** מערכון עלילתי (Skit) · POV · וולוג משמרת · אסתטיקת מזון · הדרכה / הדגמה
 - **מושא ההומור:** הלקוח · המסעדה · הצוות · המקצוע
 
-## Known environment constraint
+## Delivery
 
-`www.instagram.com:443` is denied by this session's egress policy, so Reels
-cannot be fetched from inside the container. The catalog pipeline itself is
-verified and unaffected.
+Each confirmed video is pushed straight into the researcher's Drive folder and
+upserted as one row in a Google Sheet there, through an Apps Script web app
+whose `/exec` URL lives in gitignored `drive_endpoint.txt`. The reference copy
+of that script is `scripts/apps_script.gs`; redeploying it adds row shading
+(duplicates yellow, blocked rows red) driven by the notes column.
+
+## Corpus status
+
+All 107 serials are coded. 86 videos downloaded; 001-080 and 101-107 carry
+real files, row 005 is flagged as blocked behind an Instagram login, and rows
+081-100 are flagged duplicates because the supplied link list repeats 061-080
+verbatim. Replacement links for those twenty would complete the corpus.
