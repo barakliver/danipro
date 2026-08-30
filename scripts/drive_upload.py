@@ -11,6 +11,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,8 +26,21 @@ def endpoint():
         return None
 
 
-def upload(path, mime="video/mp4"):
-    """Returns the endpoint's JSON reply, or None when no endpoint is configured."""
+def upload(path, mime="video/mp4", tries=3):
+    """Returns the endpoint's JSON reply, or None when no endpoint is configured.
+
+    Apps Script drops the odd request under load, so a failure is retried.
+    """
+    for attempt in range(tries):
+        r = _upload_once(path, mime)
+        if r is None or r.get("ok"):
+            return r
+        if attempt < tries - 1:
+            time.sleep(5 * (attempt + 1))
+    return r
+
+
+def _upload_once(path, mime="video/mp4"):
     url = endpoint()
     if not url:
         return None
