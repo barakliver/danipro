@@ -81,6 +81,7 @@ def main():
     p.add_argument("--humor", required=True)
     p.add_argument("--subject", required=True)
     p.add_argument("--cookies", help="cookies file, if Instagram requires auth")
+    p.add_argument("--buffer", help="use this already-fetched mp4 instead of downloading")
     p.add_argument("--note", default="", help="8th sheet column, e.g. duplicate/blocked flags")
     p.add_argument("--no-download", action="store_true",
                    help="catalog only; use when the MP4 is already in ./videos/")
@@ -100,7 +101,10 @@ def main():
     dest = os.path.join(T.VIDEO_DIR, filename)
     os.makedirs(T.VIDEO_DIR, exist_ok=True)
 
-    if not a.no_download:
+    if a.buffer:
+        import shutil
+        shutil.copyfile(a.buffer, dest)
+    elif not a.no_download:
         if download(a.url, dest, a.cookies) != 0 or not os.path.exists(dest):
             raise SystemExit("ההורדה נכשלה — הרשומה לא נוספה ל-CSV.")
 
