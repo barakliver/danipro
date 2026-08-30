@@ -53,6 +53,31 @@ def upload(path, mime="video/mp4"):
         os.unlink(tmp.name)
 
 
+def upload_sheet(rows):
+    """Upsert rows (rows[0] = headers) into the Google Sheet in the folder."""
+    url = endpoint()
+    if not url:
+        return None
+    tmp = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False,
+                                      encoding="utf-8")
+    try:
+        json.dump(rows, tmp, ensure_ascii=False)
+        tmp.close()
+        out = subprocess.run(
+            ["curl", "-sS", "-L", "--max-time", "120",
+             "--data-urlencode", "action=sheet",
+             "--data-urlencode", "rows@" + tmp.name,
+             url],
+            capture_output=True, text=True, timeout=150)
+        try:
+            return json.loads(out.stdout.strip())
+        except json.JSONDecodeError:
+            err = (out.stdout or out.stderr or "").strip()
+            return {"ok": False, "error": err[:300] or "empty response"}
+    finally:
+        os.unlink(tmp.name)
+
+
 def mime_for(path):
     return "text/csv" if path.endswith(".csv") else "video/mp4"
 

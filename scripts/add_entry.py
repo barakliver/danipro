@@ -112,9 +112,10 @@ def main():
         sent = drive_upload.upload(dest)
         if sent is not None:
             print("Drive {}: {}".format("OK" if sent.get("ok") else "FAILED", sent))
-    sent_csv = drive_upload.upload(T.CSV_PATH, "text/csv")
+    row = ["{}".format(idx), a.url, desc, genre, ritual, humor, subject]
+    sent_csv = drive_upload.upload_sheet([T.HEADERS, row])
     if sent_csv is not None:
-        print("Drive CSV {}: {}".format("OK" if sent_csv.get("ok") else "FAILED", sent_csv))
+        print("Drive Sheet {}: {}".format("OK" if sent_csv.get("ok") else "FAILED", sent_csv))
 
     size = os.path.getsize(dest) / 1e6 if os.path.exists(dest) else 0
     print("\nוידאו {}/{} — נשמר: {} ({:.1f}MB)".format(a.index, T.TOTAL, dest, size))
