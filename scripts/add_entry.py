@@ -21,11 +21,13 @@ FORBIDDEN = set('/\\:*?"<>|')
 
 
 def sanitize(text):
-    """Filename-safe Hebrew slug: strip forbidden chars, spaces -> underscores."""
+    """Filename-safe Hebrew slug: strip forbidden chars, keep natural spacing."""
     cleaned = "".join(" " if ch in FORBIDDEN else ch for ch in text)
     cleaned = "".join(ch for ch in cleaned if ord(ch) >= 32)
-    slug = "_".join(cleaned.split())
-    return slug.strip("._") or "untitled"
+    slug = " ".join(cleaned.split())
+    # A stripped quote can leave a space sitting before punctuation.
+    slug = slug.replace(" ,", ",").replace(" .", ".")
+    return slug.strip(". ") or "untitled"
 
 
 def download(url, dest, cookies=None):
@@ -91,7 +93,7 @@ def main():
 
     idx = "{:03d}".format(a.index)
     desc = " ".join(a.desc.split())
-    filename = "{}_{}.mp4".format(idx, sanitize(desc))
+    filename = "{} {}.mp4".format(idx, sanitize(desc))
     dest = os.path.join(T.VIDEO_DIR, filename)
     os.makedirs(T.VIDEO_DIR, exist_ok=True)
 
