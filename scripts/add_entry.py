@@ -10,9 +10,18 @@ Runs only after the user has picked a description in Step 2.
 """
 import argparse
 import csv
+import datetime
 import os
 import subprocess
 import sys
+
+IL_TZ = datetime.timezone(datetime.timedelta(hours=3))  # Asia/Jerusalem (IDT)
+
+
+def il_time(ts=None):
+    dt = (datetime.datetime.fromtimestamp(ts, IL_TZ) if ts
+          else datetime.datetime.now(IL_TZ))
+    return dt.strftime("%d.%m.%Y %H:%M")
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import taxonomy as T
@@ -108,9 +117,13 @@ def main():
         if download(a.url, dest, a.cookies) != 0 or not os.path.exists(dest):
             raise SystemExit("ההורדה נכשלה — הרשומה לא נוספה ל-CSV.")
 
+    dl_time = il_time(os.path.getmtime(dest)) if os.path.exists(dest) else ""
+    row = ["{}".format(idx), a.url, desc, genre, ritual, humor, subject,
+           " ".join(a.note.split()), dl_time, il_time()]
+
     rows = load_rows()
     rows = [r for r in rows if not (r and r[0] == idx)]  # re-run is idempotent
-    rows.append([idx, a.url, desc, genre, ritual, humor, subject, " ".join(a.note.split())])
+    rows.append(row)
     rows.sort(key=lambda r: r[0])
     write_rows(rows)
 
@@ -118,7 +131,6 @@ def main():
         sent = drive_upload.upload(dest)
         if sent is not None:
             print("Drive {}: {}".format("OK" if sent.get("ok") else "FAILED", sent))
-    row = ["{}".format(idx), a.url, desc, genre, ritual, humor, subject, " ".join(a.note.split())]
     sent_csv = drive_upload.upload_sheet([T.HEADERS, row])
     if sent_csv is not None:
         print("Drive Sheet {}: {}".format("OK" if sent_csv.get("ok") else "FAILED", sent_csv))
