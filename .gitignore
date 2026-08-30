@@ -1,0 +1,6 @@
+# Video files are large binaries and exceed GitHub's practical limits.
+# The corpus lives in ./videos/ locally; only the catalog is version-controlled.
+videos/*.mp4
+__pycache__/
+*.pyc
+cookies.txt
