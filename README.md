@@ -7,8 +7,8 @@ Corpus for a seminar paper on media rituals and humor typologies
 
 | Path | Purpose |
 | --- | --- |
-| `videos/` | Downloaded MP4s, named `[Index]_[Hebrew_Description].mp4` |
-| `research_database.csv` | The catalog (UTF-8 **with BOM**, for Excel Hebrew) |
+| `videos/` | Downloaded MP4s, named `[Index] [Hebrew Description].mp4` |
+| `research_database.csv` | The catalog, 7 columns (UTF-8 **with BOM**, for Excel Hebrew) |
 | `scripts/taxonomy.py` | The approved coding frame |
 | `scripts/add_entry.py` | Step 3 + 4: download, rename, catalog |
 | `scripts/render_table.py` | Re-render the summary table from the CSV |
@@ -26,7 +26,7 @@ Steps 3 and 4 are one command:
 python3 scripts/add_entry.py --index 1 \
   --url https://www.instagram.com/reel/XXXX/ \
   --desc "עובד קונדיטוריה מערבב סבון כלים מול המנהל" \
-  --genre skit --ritual חשיפה --humor אירוניה --subject צוות
+  --genre skit --ritual חשיפה --humor אירוניה --subject לקוח
 ```
 
 Categories are validated against `taxonomy.py`; an unapproved value aborts the
@@ -39,7 +39,7 @@ Add `--cookies cookies.txt` if Instagram requires authentication, or
 - **סוג הטקס:** חשיפה · צריכה · ייעוץ
 - **טכניקת הומור:** סלפסטיק · אירוניה · סאטירה · פרודיה · אי-הבנה · הפתעה · התנהגות ליצנית
 - **ז'אנר ויזואלי:** מערכון עלילתי (Skit) · POV · וולוג משמרת · אסתטיקת מזון · הדרכה / הדגמה
-- **מושא ההומור:** הצוות / המסעדה (הומור עצמי) · הלקוח / הלקוחות · מתחרים · סיטואציה כללית
+- **מושא ההומור:** הלקוח · המסעדה · הצוות · המקצוע
 
 ## Known environment constraint
 

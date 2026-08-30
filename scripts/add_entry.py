@@ -102,8 +102,8 @@ def main():
             raise SystemExit("ההורדה נכשלה — הרשומה לא נוספה ל-CSV.")
 
     rows = load_rows()
-    rows = [r for r in rows if not (r and r[0].startswith(idx))]  # re-run is idempotent
-    rows.append(["{} | {}".format(idx, a.url), desc, genre, ritual, humor, subject])
+    rows = [r for r in rows if not (r and r[0] == idx)]  # re-run is idempotent
+    rows.append([idx, a.url, desc, genre, ritual, humor, subject])
     rows.sort(key=lambda r: r[0])
     write_rows(rows)
 
