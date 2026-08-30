@@ -30,20 +30,35 @@ def upload(path, mime="video/mp4"):
     url = endpoint()
     if not url:
         return None
+    display_name = os.path.basename(path)
+    # Apps Script rejects POSTs over ~50MB, and base64 costs 1.37x: shrink
+    # anything above ~33MB to 720p for the Drive copy (local file untouched).
+    if os.path.getsize(path) > 33 * 1024 * 1024 and mime == "video/mp4":
+        small = tempfile.NamedTemporaryFile(suffix=".mp4", delete=False).name
+        rc = subprocess.call(
+            ["ffmpeg", "-v", "error", "-y", "-i", path,
+             "-vf", "scale=-2:720", "-c:v", "libx264", "-crf", "28",
+             "-preset", "veryfast", "-c:a", "aac", "-b:a", "128k", small])
+        if rc == 0 and 0 < os.path.getsize(small) < os.path.getsize(path):
+            path = small
     with open(path, "rb") as fh:
-        b64 = base64.b64encode(fh.read())
-    # curl reads the base64 from a temp file; a multi-MB argv would overflow.
-    tmp = tempfile.NamedTemporaryFile("wb", suffix=".b64", delete=False)
+        b64 = base64.b64encode(fh.read()).decode("ascii")
+    # Build the whole form body ourselves: curl's --data-urlencode buffers the
+    # encode in memory and dies on multi-MB videos. Base64 only needs three
+    # characters escaped for x-www-form-urlencoded.
+    from urllib.parse import quote
+    body = "name={}&type={}&data={}".format(
+        quote(display_name), quote(mime),
+        b64.replace("+", "%2B").replace("/", "%2F").replace("=", "%3D"))
+    tmp = tempfile.NamedTemporaryFile("w", suffix=".form", delete=False)
     try:
-        tmp.write(b64)
+        tmp.write(body)
         tmp.close()
         out = subprocess.run(
-            ["curl", "-sS", "-L", "--max-time", "300",
-             "--data-urlencode", "name=" + os.path.basename(path),
-             "--data-urlencode", "type=" + mime,
-             "--data-urlencode", "data@" + tmp.name,
+            ["curl", "-sS", "-L", "--max-time", "600",
+             "--data", "@" + tmp.name,
              url],
-            capture_output=True, text=True, timeout=330)
+            capture_output=True, text=True, timeout=630)
         try:
             return json.loads(out.stdout.strip())
         except json.JSONDecodeError:
