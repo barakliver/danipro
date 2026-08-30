@@ -1,0 +1,6 @@
+001 https://www.instagram.com/p/DI9ap8UN0sO/ DONE
+002 https://www.instagram.com/p/DYkQiM3j2Xi/ DONE
+003 https://www.instagram.com/p/DYshc2lIIKk/ DONE
+004 https://www.instagram.com/p/C0bp17BIjFJ/ DONE
+005 https://www.instagram.com/p/DbE5n1Nsv2T/ BLOCKED_LOGIN
+006 https://www.instagram.com/p/DbfcwxKo1fm/ RETRYING
