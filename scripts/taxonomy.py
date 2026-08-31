@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Approved coding frame for the 107-reel corpus (Trillo; Buijzen & Valkenburg; Shifman)."""
 
-TOTAL = 107
+TOTAL = 120
 CSV_PATH = "research_database.csv"
 VIDEO_DIR = "videos"
 
