@@ -6,3 +6,4 @@ __pycache__/
 cookies.txt
 drive_endpoint.txt
 scripts/ig_dm.py
+stats.json
