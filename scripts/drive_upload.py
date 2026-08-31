@@ -82,22 +82,29 @@ def _upload_once(path, mime="video/mp4"):
         os.unlink(tmp.name)
 
 
-def upload_sheet(rows):
-    """Upsert rows (rows[0] = headers) into the Google Sheet in the folder."""
+def upload_sheet(rows, keep=None):
+    """Upsert rows (rows[0] = headers) into the Sheet; optionally trash any
+    video whose filename is not in `keep`."""
     url = endpoint()
     if not url:
         return None
     tmp = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False,
                                       encoding="utf-8")
+    keep_tmp = None
+    args = ["curl", "-sS", "-L", "--max-time", "180",
+            "--data-urlencode", "action=sheet"]
     try:
         json.dump(rows, tmp, ensure_ascii=False)
         tmp.close()
-        out = subprocess.run(
-            ["curl", "-sS", "-L", "--max-time", "120",
-             "--data-urlencode", "action=sheet",
-             "--data-urlencode", "rows@" + tmp.name,
-             url],
-            capture_output=True, text=True, timeout=150)
+        args += ["--data-urlencode", "rows@" + tmp.name]
+        if keep is not None:
+            keep_tmp = tempfile.NamedTemporaryFile("w", suffix=".json",
+                                                   delete=False, encoding="utf-8")
+            json.dump(keep, keep_tmp, ensure_ascii=False)
+            keep_tmp.close()
+            args += ["--data-urlencode", "keep@" + keep_tmp.name]
+        args.append(url)
+        out = subprocess.run(args, capture_output=True, text=True, timeout=210)
         try:
             return json.loads(out.stdout.strip())
         except json.JSONDecodeError:
@@ -105,6 +112,8 @@ def upload_sheet(rows):
             return {"ok": False, "error": err[:300] or "empty response"}
     finally:
         os.unlink(tmp.name)
+        if keep_tmp:
+            os.unlink(keep_tmp.name)
 
 
 def mime_for(path):

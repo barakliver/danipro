@@ -1,3 +1,5 @@
+// Google Apps Script web app — receives videos + sheet rows into the research folder.
+// Deploy: Deploy > New deployment > Web app > Execute as Me, Access Anyone.
 const FOLDER_ID = '1iirCgUmHlFblIHv4Jhyw8sIbMFC7F_fG';
 const SHEET_NAME = 'research_database';
 
@@ -39,7 +41,6 @@ function updateSheet(e) {
   }
   const sh = ss.getSheets()[0];
   sh.getRange('A:A').setNumberFormat('@');
-  // header row follows whatever width the sender declares (e.g. added notes column)
   sh.getRange(1, 1, 1, rows[0].length).setValues([rows[0]]).setFontWeight('bold');
 
   const last = sh.getLastRow();
@@ -51,8 +52,8 @@ function updateSheet(e) {
     const at = serials.indexOf(String(row[0]));
     const target = at >= 0 ? at + 2 : sh.getLastRow() + 1;
     sh.getRange(target, 1, 1, row.length).setValues([row]);
-    // צבע לפי עמודת ההערות: כפילות = צהוב, חסום/לא ירד = אדום בהיר
-    const note = String(row[row.length - 1] || '');
+    // color by the notes column: duplicate = yellow, blocked = light red
+    const note = String(row[row.length - 3] || '');   // notes is 3rd from the end
     let color = null;
     if (note.indexOf('כפילות') !== -1) color = '#fff2cc';
     else if (note.indexOf('חסום') !== -1 || note.indexOf('לא ירד') !== -1) color = '#f4cccc';
@@ -60,10 +61,22 @@ function updateSheet(e) {
     if (at < 0) serials.push(String(row[0]));
   }
 
+  // optional cleanup: trash any mp4 whose name is not in the keep-list
+  let trashed = 0;
+  if (e.parameter.keep) {
+    const keep = {};
+    JSON.parse(e.parameter.keep).forEach(function (n) { keep[n] = true; });
+    const vids = folder.getFilesByType(MimeType.MPEG4);
+    while (vids.hasNext()) {
+      const f = vids.next();
+      if (!keep[f.getName()]) { f.setTrashed(true); trashed++; }
+    }
+  }
+
   const stale = folder.getFilesByName('research_database.csv');
   while (stale.hasNext()) stale.next().setTrashed(true);
 
   return ContentService
-    .createTextOutput(JSON.stringify({ok: true, sheet: ss.getUrl()}))
+    .createTextOutput(JSON.stringify({ok: true, sheet: ss.getUrl(), trashed: trashed}))
     .setMimeType(ContentService.MimeType.JSON);
 }
