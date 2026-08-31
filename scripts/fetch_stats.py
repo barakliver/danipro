@@ -35,11 +35,13 @@ def fetch(code):
     if not items:
         return None
     m = items[0]
+    ts = m.get('taken_at') or m.get('device_timestamp')
     return {
         'username': (m.get('user') or {}).get('username'),
         'likes': m.get('like_count'),
         'plays': m.get('play_count') or m.get('ig_play_count') or m.get('view_count'),
         'comments': m.get('comment_count'),
+        'taken_at': ts,
     }
 
 
@@ -52,7 +54,7 @@ def main():
     with open(T.CSV_PATH, encoding='utf-8-sig', newline='') as fh:
         rows = list(csv.reader(fh))[1:]
     todo = [(r[0], code_of(r[1])) for r in rows]
-    todo = [(idx, c) for idx, c in todo if c not in stats]
+    todo = [(idx, c) for idx, c in todo if c not in stats or stats.get(c, {}).get('taken_at') is None]
     print('לשליפה: {} (כבר יש: {})'.format(len(todo), len(stats)), flush=True)
     for i, (idx, c) in enumerate(todo, 1):
         for attempt in range(3):
@@ -60,7 +62,7 @@ def main():
                 s = fetch(c)
             except Exception as e:
                 s = None
-            if s and s.get('plays') is not None:
+            if s and s.get('taken_at') is not None:
                 stats[c] = s
                 break
             time.sleep(20 * (attempt + 1))
