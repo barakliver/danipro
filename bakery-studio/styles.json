@@ -1,5 +1,15 @@
 [
   {
+    "id": "kraft-minimal",
+    "name": "מינימליסטי על נייר קראפט",
+    "surface": "a seamless matte warm taupe / kraft-paper backdrop (color around #B9A48C), same paper as the floor with no visible horizon line, very subtle paper texture, completely empty",
+    "lighting": "single large soft diffused light from the front-left, like overcast window light; gentle soft shadow falling to the right and slightly behind the product; no hard highlights, no rim light, no dark vignette",
+    "props": "none at all - only the single pastry, no plates, no crumbs, no cloth",
+    "camera": "eye-level to slightly elevated (10-20 degrees) side view, 90mm lens, product small and centered with large negative space around it (product takes about 25-35% of the frame), whole background in soft even tone",
+    "mood": "quiet, minimalist, editorial, Scandinavian-Japanese bakery look; muted warm earthy palette, soft film-like color grade, slightly lifted shadows, background low-saturation beige while the pastry keeps rich golden-caramel tones and visible laminated layers",
+    "extra": "consistent series look, as if part of a single grid of product photos shot on the same set in one session"
+  },
+  {
     "id": "rustic",
     "name": "מאפייה כפרית",
     "surface": "a weathered dark oak table with a light dusting of flour, a folded natural linen cloth underneath",
