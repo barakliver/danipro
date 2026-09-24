@@ -1,7 +1,8 @@
 """Image backends that turn a raw bakery photo into a studio shot.
 
-Each provider takes the original image bytes plus a composed prompt and
-returns PNG/JPEG bytes. `gemini` and `openai` re-shoot the product in the
+Each provider takes the original image bytes plus a composed prompt (and
+optionally a style-reference image sent as a second image) and returns
+PNG/JPEG bytes. `gemini` and `openai` re-shoot the product in the
 chosen set; `local` needs no API key and only re-grades the existing photo
 (light, color, sharpness) without changing the background.
 """
@@ -40,17 +41,23 @@ def available():
     }
 
 
-def run(provider, image_bytes, mime, prompt, aspect="original"):
+def run(provider, image_bytes, mime, prompt, aspect="original", reference=None):
+    """`reference` is optional JPEG bytes of a style reference; the local
+    provider ignores it."""
     if provider == "gemini":
-        return _gemini(image_bytes, mime, prompt, aspect)
+        return _gemini(image_bytes, mime, prompt, aspect, reference)
     if provider == "openai":
-        return _openai(image_bytes, mime, prompt, aspect)
+        return _openai(image_bytes, mime, prompt, aspect, reference)
     if provider == "local":
         return _local(image_bytes)
     raise ProviderError(f"ספק לא מוכר: {provider}")
 
 
-def _gemini(image_bytes, mime, prompt, aspect):
+def _inline(data, mime):
+    return {"inline_data": {"mime_type": mime, "data": base64.b64encode(data).decode()}}
+
+
+def _gemini(image_bytes, mime, prompt, aspect, reference=None):
     key = os.environ.get("GEMINI_API_KEY")
     if not key:
         raise ProviderError("חסר GEMINI_API_KEY")
@@ -58,14 +65,14 @@ def _gemini(image_bytes, mime, prompt, aspect):
     ratio = ASPECTS.get(aspect, ASPECTS["original"])[0]
     if ratio:
         config["imageConfig"] = {"aspectRatio": ratio}
+    # Images first (product, then reference) so "FIRST/SECOND image" in the
+    # prompt matches their order.
+    parts = [_inline(image_bytes, mime)]
+    if reference:
+        parts.append(_inline(reference, "image/jpeg"))
+    parts.append({"text": prompt})
     body = {
-        "contents": [{
-            "parts": [
-                {"text": prompt},
-                {"inline_data": {"mime_type": mime,
-                                 "data": base64.b64encode(image_bytes).decode()}},
-            ]
-        }],
+        "contents": [{"parts": parts}],
         "generationConfig": config,
     }
     url = (f"https://generativelanguage.googleapis.com/v1beta/models/"
@@ -81,7 +88,7 @@ def _gemini(image_bytes, mime, prompt, aspect):
     raise ProviderError("Gemini לא החזיר תמונה (ייתכן שהבקשה נחסמה)")
 
 
-def _openai(image_bytes, mime, prompt, aspect):
+def _openai(image_bytes, mime, prompt, aspect, reference=None):
     key = os.environ.get("OPENAI_API_KEY")
     if not key:
         raise ProviderError("חסר OPENAI_API_KEY")
@@ -93,11 +100,14 @@ def _openai(image_bytes, mime, prompt, aspect):
         "quality": "high",
         "input_fidelity": "high",
     }
+    files = [("image[]", (f"input.{ext}", image_bytes, mime))]
+    if reference:
+        files.append(("image[]", ("reference.jpg", reference, "image/jpeg")))
     r = httpx.post(
         "https://api.openai.com/v1/images/edits",
         headers={"Authorization": f"Bearer {key}"},
         data=data,
-        files={"image": (f"input.{ext}", image_bytes, mime)},
+        files=files,
         timeout=TIMEOUT,
     )
     if r.status_code != 200:
