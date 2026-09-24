@@ -2,12 +2,12 @@
   {
     "id": "kraft-minimal",
     "name": "מינימליסטי על נייר קראפט",
-    "surface": "a seamless matte warm taupe / kraft-paper backdrop (color around #B9A48C), same paper as the floor with no visible horizon line, very subtle paper texture, completely empty",
-    "lighting": "single large soft diffused light from the front-left, like overcast window light; gentle soft shadow falling to the right and slightly behind the product; no hard highlights, no rim light, no dark vignette",
-    "props": "none at all - only the single pastry, no plates, no crumbs, no cloth",
-    "camera": "eye-level to slightly elevated (10-20 degrees) side view, 90mm lens, product small and centered with large negative space around it (product takes about 25-35% of the frame), whole background in soft even tone",
-    "mood": "quiet, minimalist, editorial, Scandinavian-Japanese bakery look; muted warm earthy palette, soft film-like color grade, slightly lifted shadows, background low-saturation beige while the pastry keeps rich golden-caramel tones and visible laminated layers",
-    "extra": "consistent series look, as if part of a single grid of product photos shot on the same set in one session"
+    "surface": "a seamless matte paper sweep in a muted greyish sand-taupe (not yellow, not orange, not brown kraft): about #C9B8A6 at the top of the frame softly darkening to about #B3A390 at the bottom; smooth continuous curve from floor to wall with no horizon line, very fine paper grain; perfectly clean and empty - no crumbs, no flour, no seeds, no specks, no stains",
+    "lighting": "single large soft diffused light from the front-left, like overcast north-window light; light falls off gently across the backdrop so the background has a subtle tonal gradient (lighter behind the top, slightly darker at the bottom and far right); a soft grounded contact shadow directly under the loaf plus a gentle soft shadow falling to the right; soft highlights that reveal crust texture; no hard light, no rim light, no heavy vignette",
+    "props": "none at all - only the product alone on the clean paper; no crumbs, no flour, no plates, no boards, no cloth",
+    "camera": "eye-level to slightly elevated (10-15 degrees) side view, 100mm lens at about f/4: the whole product is sharp from front to back while the backdrop falls into soft, creamy out-of-focus blur, creating depth and separation; the ENTIRE product fully visible and uncropped, centered, occupying about 35-45% of the frame width with generous even negative space on all sides; never a close-up, never cropped",
+    "mood": "quiet, minimalist, editorial fine-bakery look; muted warm-neutral palette, soft film-like color grade with slightly lifted blacks; the background stays low-saturation greige while the bread keeps rich golden-brown crust color and texture; three-dimensional, tactile, gallery-like",
+    "extra": "consistent series look, as if one of a grid of product photos shot on the same set in one session with identical background color and lighting"
   },
   {
     "id": "rustic",
