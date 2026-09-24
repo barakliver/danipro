@@ -19,7 +19,7 @@ from fastapi.staticfiles import StaticFiles
 from PIL import Image, ImageOps
 
 import providers
-from prompt import PRODUCT_TYPES, build_prompt
+from prompt import FIXES, PRODUCT_TYPES, build_prompt, build_refine_prompt
 
 ROOT = Path(__file__).parent
 STYLES_FILE = ROOT / "styles.json"
@@ -32,6 +32,7 @@ for d in (ORIGINALS, RESULTS, REFERENCES):
 
 MAX_UPLOAD = 20 * 1024 * 1024
 MAX_SIDE = 2048  # downscale huge phone photos before sending to a model
+JOB_ID = re.compile(r"[0-9a-f]{12}")
 STYLE_FIELDS = ("name", "surface", "lighting", "props", "camera", "mood", "extra")
 _lock = threading.Lock()
 
@@ -92,6 +93,7 @@ def config():
         "providers": providers.available(),
         "aspects": list(providers.ASPECTS),
         "product_types": {k: label for k, (label, _) in PRODUCT_TYPES.items()},
+        "fixes": {k: label for k, (label, _) in FIXES.items()},
     }
 
 
@@ -167,6 +169,7 @@ async def process(
     product_type: str = Form(""),
     use_reference: bool = Form(True),
     variant: int = Form(1),
+    group: str = Form(""),
 ):
     raw = await image.read()
     if len(raw) > MAX_UPLOAD:
@@ -189,13 +192,8 @@ async def process(
     except providers.ProviderError as e:
         raise HTTPException(502, str(e))
 
-    job = uuid.uuid4().hex[:12]
-    (ORIGINALS / f"{job}.jpg").write_bytes(img_bytes)
-    res_img = Image.open(io.BytesIO(result)).convert("RGB")
-    res_img.save(RESULTS / f"{job}.jpg", "JPEG", quality=95)
-
-    entry = {
-        "id": job,
+    return _store(img_bytes, result, started, {
+        "group": group if JOB_ID.fullmatch(group) else None,
         "filename": image.filename,
         "style_id": style_id,
         "style_name": style["name"],
@@ -205,6 +203,18 @@ async def process(
         "product_type": product_type,
         "used_reference": reference is not None,
         "variant": variant,
+    })
+
+
+def _store(original, result, started, fields):
+    """Save original + result for a new job and prepend it to the history."""
+    job = uuid.uuid4().hex[:12]
+    (ORIGINALS / f"{job}.jpg").write_bytes(original)
+    Image.open(io.BytesIO(result)).convert("RGB").save(RESULTS / f"{job}.jpg", "JPEG", quality=95)
+    entry = {
+        "id": job,
+        **fields,
+        "group": fields.get("group") or job,
         "created": int(time.time()),
         "seconds": round(time.time() - started, 1),
         "original": f"/files/originals/{job}.jpg",
@@ -217,6 +227,71 @@ async def process(
     return entry
 
 
+def _job_or_404(job):
+    if not JOB_ID.fullmatch(job):
+        raise HTTPException(400, "מזהה לא תקין")
+    for h in _load(HISTORY_FILE, []):
+        if h["id"] == job:
+            return h
+    raise HTTPException(404, "התוצאה לא נמצאה")
+
+
+@app.post("/api/refine")
+async def refine(payload: dict):
+    """Apply a one-click fix (or free text) to an existing result, as a new job."""
+    parent = _job_or_404(str(payload.get("job", "")))
+    fix, custom = str(payload.get("fix", "")), str(payload.get("custom", "")).strip()[:500]
+    if fix in FIXES:
+        label, change = FIXES[fix]
+    elif custom:
+        label, change = custom, custom
+    else:
+        raise HTTPException(400, "לא נבחר תיקון")
+    provider = parent.get("provider", "")
+    if provider == "local":
+        raise HTTPException(400, "תיקונים זמינים רק עם מנוע AI (Gemini או OpenAI)")
+    if not providers.available().get(provider):
+        raise HTTPException(400, f"הספק {provider} אינו מוגדר (חסר מפתח API)")
+
+    result_path = RESULTS / f"{parent['id']}.jpg"
+    original_path = ORIGINALS / f"{parent['id']}.jpg"
+    if not result_path.exists() or not original_path.exists():
+        raise HTTPException(404, "קובץ התוצאה חסר")
+    ref = _ref_path(parent["style_id"]) if parent.get("style_id") else None
+    reference = ref.read_bytes() if parent.get("used_reference") and ref and ref.exists() else None
+    prompt = build_refine_prompt(change, reference is not None)
+    started = time.time()
+    try:
+        result = await run_in_threadpool(
+            providers.run, provider, result_path.read_bytes(), "image/jpeg", prompt,
+            parent.get("aspect", "original"), reference)
+    except providers.ProviderError as e:
+        raise HTTPException(502, str(e))
+
+    keep = ("filename", "style_id", "style_name", "provider", "aspect", "notes",
+            "product_type", "used_reference", "variant")
+    return _store(original_path.read_bytes(), result, started, {
+        **{k: parent.get(k) for k in keep},
+        "group": parent.get("group") or parent["id"],
+        "parent": parent["id"],
+        "fix": label,
+    })
+
+
+@app.post("/api/history/{job}/star")
+def star(job: str, payload: dict):
+    if not JOB_ID.fullmatch(job):
+        raise HTTPException(400, "מזהה לא תקין")
+    with _lock:
+        history = _load(HISTORY_FILE, [])
+        entry = next((h for h in history if h["id"] == job), None)
+        if not entry:
+            raise HTTPException(404, "התוצאה לא נמצאה")
+        entry["starred"] = bool(payload.get("starred"))
+        _save(HISTORY_FILE, history)
+    return entry
+
+
 @app.get("/api/history")
 def history():
     return _load(HISTORY_FILE, [])
@@ -225,7 +300,7 @@ def history():
 @app.get("/api/download")
 def download(ids: str):
     """Zip the given results (comma-separated job ids) for one-click download."""
-    jobs = [j for j in ids.split(",") if re.fullmatch(r"[0-9a-f]{12}", j)]
+    jobs = [j for j in ids.split(",") if JOB_ID.fullmatch(j)]
     by_id = {h["id"]: h for h in _load(HISTORY_FILE, [])}
     buf, used = io.BytesIO(), set()
     with zipfile.ZipFile(buf, "w") as zf:
@@ -235,7 +310,7 @@ def download(ids: str):
                 continue
             h = by_id[j]
             stem = re.sub(r"[^\w-]+", "_", Path(h.get("filename") or j).stem)[:60] or j
-            name = f"{stem}-v{h.get('variant', 1)}.jpg"
+            name = f"{stem}-v{h.get('variant') or 1}{'-fix' if h.get('parent') else ''}.jpg"
             if name in used:
                 name = f"{stem}-{j}.jpg"
             used.add(name)
@@ -248,7 +323,7 @@ def download(ids: str):
 
 @app.delete("/api/history/{job}")
 def delete_job(job: str):
-    if not re.fullmatch(r"[0-9a-f]{12}", job):
+    if not JOB_ID.fullmatch(job):
         raise HTTPException(400, "מזהה לא תקין")
     with _lock:
         _save(HISTORY_FILE, [h for h in _load(HISTORY_FILE, []) if h["id"] != job])

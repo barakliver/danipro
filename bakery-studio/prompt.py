@@ -68,3 +68,49 @@ def build_prompt(style, notes="", product_type="", has_reference=False):
     body = "\n".join(f"- {label}: {value.strip()}" for label, value in lines
                      if value and value.strip())
     return (REFERENCE if has_reference else "") + BASE + "STYLE:\n" + body + QUALITY
+
+
+# One-click fixes applied to an existing result: key -> (Hebrew label, instruction)
+FIXES = {
+    "cooler": (
+        "רקע אפור יותר",
+        "Make the background cooler and greyer, less yellow and less orange - a muted "
+        "greyish sand-taupe like #C4B5A5. Keep the product's own crust color unchanged.",
+    ),
+    "zoom_out": (
+        "להרחיק",
+        "Zoom out: show the whole product fully uncropped and smaller in the frame "
+        "(about 35-40% of the frame width) with more empty background on all sides.",
+    ),
+    "clean": (
+        "לנקות פירורים",
+        "Remove every crumb, speck, seed, flour dust and stain from the background and "
+        "surface, leaving it perfectly clean and empty. Do not touch the product itself.",
+    ),
+    "depth": (
+        "יותר עומק",
+        "Add more depth: a softer, more out-of-focus background, a gentle light-to-dark "
+        "gradient in the backdrop and a clearer soft contact shadow under the product.",
+    ),
+    "brighter": (
+        "בהיר יותר",
+        "Make the whole image slightly brighter and airier while keeping the same "
+        "muted colors and soft shadows.",
+    ),
+}
+
+REFINE = (
+    "Edit this photo. Keep the product exactly the same - shape, size, scoring, crust "
+    "color and texture, glaze, toppings and fillings - and keep the rest of the image "
+    "(framing, set, light, color grade) unchanged except for this change:\n{change}\n\n"
+    "Photorealistic, no text, no watermark, no hands."
+)
+
+REFINE_REFERENCE = (
+    "\n\nThe SECOND image is the style reference for this series: the result must still "
+    "match its background color, light and grade. Do not copy anything else from it."
+)
+
+
+def build_refine_prompt(change, has_reference=False):
+    return REFINE.format(change=change.strip()) + (REFINE_REFERENCE if has_reference else "")
