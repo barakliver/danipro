@@ -12,6 +12,7 @@ async function api(path, opts = {}) {
   if (!res.ok) throw new Error(body.detail || `שגיאה ${res.status}`);
   return body;
 }
+const X_ICON = `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>`;
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
 /* ---------- upload queue ---------- */
@@ -28,11 +29,11 @@ function addFiles(list) {
 }
 function renderQueue() {
   $("#queue").innerHTML = state.files.map((f, i) =>
-    `<div class="thumb"><img src="${f.url}" alt=""><button data-i="${i}" title="הסרה">×</button></div>`).join("");
+    `<div class="thumb"><img src="${f.url}" alt="${esc(f.file.name)}"><button data-i="${i}" aria-label="הסרת ${esc(f.file.name)}">${X_ICON}</button></div>`).join("");
   updateGo();
 }
 $("#queue").addEventListener("click", (e) => {
-  const i = e.target.dataset.i;
+  const i = e.target.closest("[data-i]")?.dataset.i;
   if (i === undefined) return;
   URL.revokeObjectURL(state.files[i].url);
   state.files.splice(i, 1);
@@ -48,12 +49,14 @@ async function loadStyles() {
 }
 function renderStyles() {
   $("#styles").innerHTML = state.styles.map((s) => `
-    <button type="button" class="style-card ${s.id === state.styleId ? "active" : ""}" data-id="${esc(s.id)}">
-      <span class="edit" data-edit="${esc(s.id)}">עריכה</span>
-      <h4>${esc(s.name)}</h4>
-      <p>${esc(s.lighting || s.mood || s.surface)}</p>
-      ${s.reference ? `<img class="ref" src="${esc(s.reference)}" alt="תמונת השראה">` : ""}
-    </button>`).join("");
+    <div class="style-card ${s.id === state.styleId ? "active" : ""}" data-id="${esc(s.id)}">
+      <button type="button" class="pick" aria-pressed="${s.id === state.styleId}">
+        <h4>${esc(s.name)}</h4>
+        <p>${esc(s.lighting || s.mood || s.surface)}</p>
+        ${s.reference ? `<img class="ref" src="${esc(s.reference)}" alt="">` : ""}
+      </button>
+      <button type="button" class="edit" data-edit="${esc(s.id)}" aria-label="עריכת ${esc(s.name)}">עריכה</button>
+    </div>`).join("");
   const ref = currentStyle()?.reference;
   $("#useRefRow").hidden = !ref;
   if (ref) $("#useRefThumb").src = ref;
@@ -175,7 +178,7 @@ $("#go").addEventListener("click", async () => {
     const card = document.createElement("div");
     card.className = "result pending";
     card.innerHTML = `<div class="compare"><div><div class="spinner"></div>מצלמים בסטודיו…</div></div>
-      <div class="meta"><b>${esc(j.file.name)}${n > 1 ? ` · גרסה ${j.variant}` : ""}</b></div>`;
+      <div class="meta"><b>${esc(j.file.name)}<span class="sub">${n > 1 ? `גרסה ${j.variant} · ` : ""}בעבודה</span></b></div>`;
     return card;
   });
   $("#gallery").prepend(...cards);
@@ -226,15 +229,34 @@ function resultCard(h) {
       <span class="tag l">אחרי</span><span class="tag r">לפני</span>
     </div>
     <div class="meta">
-      <b>${esc(h.style_name)}${h.variant > 1 ? ` · גרסה ${h.variant}` : ""}${h.used_reference ? " · עם השראה" : ""}</b>
+      <b>${esc(h.style_name)}<span class="sub">${[h.filename, h.variant > 1 && `גרסה ${h.variant}`, h.used_reference && "עם השראה"].filter(Boolean).map(esc).join(" · ")}</span></b>
       <a class="ghost" href="${h.result}" download="studio-${h.id}.jpg">הורדה</a>
       <button class="ghost" data-del="${h.id}">מחיקה</button>
     </div>`;
   const cmp = card.querySelector(".compare");
+  let pos = 50;
+  const setPos = (v) => {
+    pos = Math.min(100, Math.max(0, v));
+    cmp.style.setProperty("--pos", `${pos}%`);
+    cmp.setAttribute("aria-valuenow", Math.round(pos));
+  };
   const move = (x) => {
     const r = cmp.getBoundingClientRect();
-    cmp.style.setProperty("--pos", `${Math.min(100, Math.max(0, ((x - r.left) / r.width) * 100))}%`);
+    setPos(((x - r.left) / r.width) * 100);
   };
+  Object.assign(cmp, { tabIndex: 0 });
+  cmp.setAttribute("role", "slider");
+  cmp.setAttribute("aria-label", "השוואת לפני ואחרי");
+  cmp.setAttribute("aria-valuemin", "0");
+  cmp.setAttribute("aria-valuemax", "100");
+  setPos(50);
+  cmp.addEventListener("keydown", (e) => {
+    const step = e.shiftKey ? 10 : 3;
+    if (e.key === "ArrowLeft") setPos(pos - step);
+    else if (e.key === "ArrowRight") setPos(pos + step);
+    else return;
+    e.preventDefault();
+  });
   cmp.addEventListener("pointerdown", (e) => { cmp.setPointerCapture(e.pointerId); move(e.clientX); });
   cmp.addEventListener("pointermove", (e) => { if (e.buttons) move(e.clientX); });
   card.querySelector("[data-del]").addEventListener("click", async () => {

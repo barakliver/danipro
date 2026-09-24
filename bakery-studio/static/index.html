@@ -4,26 +4,33 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>סטודיו מאפים</title>
+  <meta name="theme-color" content="#efeae3" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#171411" media="(prefers-color-scheme: dark)">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&family=Frank+Ruhl+Libre:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
   <header class="top">
     <div class="brand">
-      <span class="logo">🥐</span>
+      <span class="logo" aria-hidden="true">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M4.5 14.5c0-4.4 3.4-8 7.5-8s7.5 3.6 7.5 8c0 1.7-1.3 3-3 3h-9c-1.7 0-3-1.3-3-3Z"/><path d="M9 9.5c.6 1.4.6 3.1 0 4.5M12 8.5c.6 1.7.6 3.8 0 5.5M15 9.5c.6 1.4.6 3.1 0 4.5"/></svg>
+      </span>
       <div>
+        <p class="eyebrow">BAKERY STUDIO</p>
         <h1>סטודיו מאפים</h1>
-        <p>מעלים תמונה של לחם או מאפה — מקבלים צילום סטודיו מקצועי בסגנון שלכם</p>
+        <p>מעלים תמונה של לחם או מאפה, ומקבלים צילום סטודיו בסגנון אחיד ומוקפד</p>
       </div>
     </div>
   </header>
 
   <main>
     <section class="panel">
-      <h2><span class="step">1</span> העלאת תמונות</h2>
+      <h2><span class="step">01</span> העלאת תמונות</h2>
       <label id="drop" class="drop">
         <input id="files" type="file" accept="image/*" multiple hidden>
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4m0 0L7.5 8.5M12 4l4.5 4.5"/><path d="M4 14v3.5A2.5 2.5 0 0 0 6.5 20h11a2.5 2.5 0 0 0 2.5-2.5V14"/></svg>
         <strong>גררו לכאן תמונות</strong> או לחצו לבחירה
         <small>JPG / PNG / WEBP · עד 20MB לתמונה · אפשר כמה בבת אחת</small>
       </label>
@@ -32,8 +39,11 @@
 
     <section class="panel">
       <div class="row-between">
-        <h2><span class="step">2</span> בחירת סגנון צילום</h2>
-        <button id="newStyle" class="ghost">+ סגנון חדש</button>
+        <h2><span class="step">02</span> בחירת סגנון צילום</h2>
+        <button id="newStyle" class="ghost">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          סגנון חדש
+        </button>
       </div>
       <div id="styles" class="styles"></div>
 
@@ -75,20 +85,30 @@
         <summary>הצגת ההנחיה שנשלחת למודל</summary>
         <pre id="promptText"></pre>
       </details>
-      <button id="go" class="primary" disabled>✨ צלמו לי בסטודיו</button>
+      <button id="go" class="primary" disabled>
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.5-2h6l1.5 2h2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5Z"/><circle cx="12" cy="13" r="3.5"/></svg>
+        צלמו לי בסטודיו
+      </button>
       <p id="engineHint" class="hint"></p>
     </section>
 
     <section class="panel">
       <div class="row-between">
-        <h2><span class="step">3</span> התוצאות</h2>
+        <h2><span class="step">03</span> התוצאות</h2>
         <div class="batch">
-          <span id="progress" class="hint"></span>
-          <button id="downloadAll" class="ghost" hidden>הורדת כל התוצאות (ZIP)</button>
+          <span id="progress" class="hint" aria-live="polite"></span>
+          <button id="downloadAll" class="ghost" hidden>
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5"/><path d="M4 14v3.5A2.5 2.5 0 0 0 6.5 20h11a2.5 2.5 0 0 0 2.5-2.5V14"/></svg>
+            הורדת הכול (ZIP)
+          </button>
         </div>
       </div>
       <div id="gallery" class="gallery"></div>
-      <p id="empty" class="hint">עוד אין תוצאות. העלו תמונה ובחרו סגנון.</p>
+      <div id="empty" class="empty-state">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="m4 16 4.5-4.5 3.5 3.5 2.5-2.5L20 17.5"/><circle cx="15.5" cy="9.5" r="1.3"/></svg>
+        <p>עוד אין תוצאות.</p>
+        <p class="hint">העלו תמונה, בחרו סגנון, והצילום יופיע כאן עם השוואת לפני/אחרי.</p>
+      </div>
     </section>
   </main>
 
