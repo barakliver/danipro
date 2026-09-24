@@ -1,5 +1,5 @@
 const $ = (s) => document.querySelector(s);
-const state = { files: [], styles: [], styleId: null, editing: null, providers: {} };
+const state = { files: [], styles: [], styleId: null, editing: null, providers: {}, runIds: [] };
 const PROVIDER_LABELS = {
   gemini: "Google Gemini · צילום מחדש בסט",
   openai: "OpenAI · צילום מחדש בסט",
@@ -52,10 +52,15 @@ function renderStyles() {
       <span class="edit" data-edit="${esc(s.id)}">עריכה</span>
       <h4>${esc(s.name)}</h4>
       <p>${esc(s.lighting || s.mood || s.surface)}</p>
+      ${s.reference ? `<img class="ref" src="${esc(s.reference)}" alt="תמונת השראה">` : ""}
     </button>`).join("");
+  const ref = currentStyle()?.reference;
+  $("#useRefRow").hidden = !ref;
+  if (ref) $("#useRefThumb").src = ref;
   updateGo();
   refreshPrompt();
 }
+const currentStyle = () => state.styles.find((s) => s.id === state.styleId);
 $("#styles").addEventListener("click", (e) => {
   const edit = e.target.closest("[data-edit]");
   if (edit) return openEditor(state.styles.find((s) => s.id === edit.dataset.edit));
@@ -69,8 +74,27 @@ function openEditor(style) {
   $("#dialogTitle").textContent = style ? `עריכת "${style.name}"` : "סגנון חדש";
   $("#deleteStyle").hidden = !style;
   for (const el of form.elements) if (el.name) el.value = style?.[el.name] ?? "";
+  $("#refFile").value = "";
+  showRefPreview(style?.reference);
   dlg.showModal();
 }
+function showRefPreview(src) {
+  $("#refPreview").hidden = !src;
+  if (src) $("#refPreview").src = src;
+  $("#removeRef").hidden = !(src && state.editing?.reference);
+}
+$("#refFile").addEventListener("change", (e) => {
+  const f = e.target.files[0];
+  showRefPreview(f ? URL.createObjectURL(f) : state.editing?.reference);
+});
+$("#removeRef").addEventListener("click", async () => {
+  if (!state.editing || !confirm("להסיר את תמונת ההשראה מהסגנון?")) return;
+  await api(`/api/styles/${state.editing.id}/reference`, { method: "DELETE" });
+  state.editing.reference = null;
+  $("#refFile").value = "";
+  showRefPreview(null);
+  loadStyles();
+});
 $("#newStyle").addEventListener("click", () => openEditor(null));
 $("#cancelStyle").addEventListener("click", () => dlg.close());
 form.addEventListener("submit", async (e) => {
@@ -79,6 +103,12 @@ form.addEventListener("submit", async (e) => {
   const opts = { method: state.editing ? "PUT" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) };
   try {
     const saved = await api(state.editing ? `/api/styles/${state.editing.id}` : "/api/styles", opts);
+    const refFile = $("#refFile").files[0];
+    if (refFile) {
+      const fd = new FormData();
+      fd.append("image", refFile);
+      await api(`/api/styles/${saved.id}/reference`, { method: "POST", body: fd });
+    }
     state.styleId = saved.id;
     dlg.close();
     loadStyles();
@@ -98,12 +128,17 @@ function refreshPrompt() {
     if (!state.styleId) return;
     const r = await api("/api/preview-prompt", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ style_id: state.styleId, notes: $("#notes").value }),
+      body: JSON.stringify({
+        style_id: state.styleId, notes: $("#notes").value,
+        product_type: $("#productType").value, use_reference: $("#useRef").checked,
+      }),
     }).catch(() => null);
     if (r) $("#promptText").textContent = r.prompt;
   }, 250);
 }
 $("#notes").addEventListener("input", refreshPrompt);
+$("#productType").addEventListener("change", refreshPrompt);
+$("#useRef").addEventListener("change", refreshPrompt);
 
 /* ---------- engines ---------- */
 async function loadConfig() {
@@ -111,6 +146,8 @@ async function loadConfig() {
   state.providers = cfg.providers;
   const order = ["gemini", "openai", "local"].filter((p) => cfg.providers[p]);
   $("#provider").innerHTML = order.map((p) => `<option value="${p}">${PROVIDER_LABELS[p]}</option>`).join("");
+  $("#productType").innerHTML = Object.entries(cfg.product_types)
+    .map(([k, label]) => `<option value="${esc(k)}">${esc(label)}</option>`).join("");
   showEngineHint();
 }
 function showEngineHint() {
@@ -118,43 +155,64 @@ function showEngineHint() {
   $("#engineHint").textContent =
     !state.providers.gemini && !state.providers.openai
       ? "לא הוגדר מפתח API למודל AI, ולכן זמין רק שיפור מקומי (תאורה וצבע). להחלפת רקע וסט מלא — ראו README."
-      : p === "local" ? "שיפור מקומי משפר תאורה, צבע וחדות, אבל לא מחליף רקע או מוסיף אביזרים." : "";
+      : p === "local" ? "שיפור מקומי משפר תאורה, צבע וחדות, אבל לא מחליף רקע, לא משתמש בתמונת ההשראה ולא מייצר גרסאות שונות." : "";
   updateGo();
 }
 $("#provider").addEventListener("change", showEngineHint);
 
 /* ---------- processing ---------- */
 $("#go").addEventListener("click", async () => {
-  const jobs = state.files.splice(0);
+  const files = state.files.splice(0);
   renderQueue();
-  const params = { style_id: state.styleId, provider: $("#provider").value, aspect: $("#aspect").value, notes: $("#notes").value };
+  const params = {
+    style_id: state.styleId, provider: $("#provider").value, aspect: $("#aspect").value,
+    notes: $("#notes").value, product_type: $("#productType").value, use_reference: $("#useRef").checked,
+  };
+  // Local enhancement is deterministic, so extra variants would be identical.
+  const n = params.provider === "local" ? 1 : Number($("#variants").value);
+  const jobs = files.flatMap((f) => Array.from({ length: n }, (_, v) => ({ ...f, variant: v + 1 })));
   const cards = jobs.map((j) => {
     const card = document.createElement("div");
     card.className = "result pending";
     card.innerHTML = `<div class="compare"><div><div class="spinner"></div>מצלמים בסטודיו…</div></div>
-      <div class="meta"><b>${esc(j.file.name)}</b></div>`;
-    $("#gallery").prepend(card);
+      <div class="meta"><b>${esc(j.file.name)}${n > 1 ? ` · גרסה ${j.variant}` : ""}</b></div>`;
     return card;
   });
+  $("#gallery").prepend(...cards);
   $("#empty").hidden = true;
-  let next = 0;
+  state.runIds = [];
+  $("#downloadAll").hidden = true;
+  let next = 0, done = 0, failed = 0;
+  const progress = () => {
+    $("#progress").textContent = `הושלמו ${done} מתוך ${jobs.length}` + (failed ? ` · ${failed} נכשלו` : "");
+  };
+  progress();
   const worker = async () => {
     while (next < jobs.length) {
       const i = next++;
       const fd = new FormData();
       fd.append("image", jobs[i].file);
+      fd.append("variant", jobs[i].variant);
       for (const [k, v] of Object.entries(params)) fd.append(k, v);
       try {
         const entry = await api("/api/process", { method: "POST", body: fd });
         cards[i].replaceWith(resultCard(entry));
+        state.runIds.push(entry.id);
       } catch (err) {
+        failed++;
         cards[i].className = "result error";
         cards[i].querySelector(".compare").textContent = err.message;
       }
-      URL.revokeObjectURL(jobs[i].url);
+      done++;
+      progress();
     }
   };
   await Promise.all([worker(), worker()]);
+  files.forEach((f) => URL.revokeObjectURL(f.url));
+  $("#downloadAll").hidden = !state.runIds.length;
+});
+$("#downloadAll").addEventListener("click", () => {
+  location.href = `/api/download?ids=${state.runIds.join(",")}`;
 });
 
 function resultCard(h) {
@@ -168,7 +226,7 @@ function resultCard(h) {
       <span class="tag l">אחרי</span><span class="tag r">לפני</span>
     </div>
     <div class="meta">
-      <b>${esc(h.style_name)}</b>
+      <b>${esc(h.style_name)}${h.variant > 1 ? ` · גרסה ${h.variant}` : ""}${h.used_reference ? " · עם השראה" : ""}</b>
       <a class="ghost" href="${h.result}" download="studio-${h.id}.jpg">הורדה</a>
       <button class="ghost" data-del="${h.id}">מחיקה</button>
     </div>`;

@@ -9,23 +9,25 @@ import re
 import threading
 import time
 import uuid
+import zipfile
 from pathlib import Path
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.concurrency import run_in_threadpool
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from PIL import Image, ImageOps
 
 import providers
-from prompt import build_prompt
+from prompt import PRODUCT_TYPES, build_prompt
 
 ROOT = Path(__file__).parent
 STYLES_FILE = ROOT / "styles.json"
 DATA = ROOT / "data"
 ORIGINALS, RESULTS = DATA / "originals", DATA / "results"
+REFERENCES = DATA / "references"  # one style-reference image per style id
 HISTORY_FILE = DATA / "history.json"
-for d in (ORIGINALS, RESULTS):
+for d in (ORIGINALS, RESULTS, REFERENCES):
     d.mkdir(parents=True, exist_ok=True)
 
 MAX_UPLOAD = 20 * 1024 * 1024
@@ -51,6 +53,19 @@ def _style_or_404(styles, style_id):
     raise HTTPException(404, "סגנון לא נמצא")
 
 
+def _ref_path(style_id):
+    if not re.fullmatch(r"[A-Za-z0-9_-]+", style_id):
+        raise HTTPException(400, "מזהה סגנון לא תקין")
+    return REFERENCES / f"{style_id}.jpg"
+
+
+def _with_reference(style):
+    ref = _ref_path(style["id"])
+    if not ref.exists():
+        return style
+    return {**style, "reference": f"/files/references/{ref.name}?v={int(ref.stat().st_mtime)}"}
+
+
 def _clean_style(payload):
     style = {k: str(payload.get(k, "")).strip()[:1500] for k in STYLE_FIELDS}
     if not style["name"]:
@@ -73,12 +88,16 @@ def _normalize(raw):
 
 @app.get("/api/config")
 def config():
-    return {"providers": providers.available(), "aspects": list(providers.ASPECTS)}
+    return {
+        "providers": providers.available(),
+        "aspects": list(providers.ASPECTS),
+        "product_types": {k: label for k, (label, _) in PRODUCT_TYPES.items()},
+    }
 
 
 @app.get("/api/styles")
 def list_styles():
-    return _load(STYLES_FILE, [])
+    return [_with_reference(s) for s in _load(STYLES_FILE, [])]
 
 
 @app.post("/api/styles")
@@ -109,6 +128,23 @@ def delete_style(style_id: str):
         styles = _load(STYLES_FILE, [])
         _style_or_404(styles, style_id)
         _save(STYLES_FILE, [s for s in styles if s["id"] != style_id])
+    _ref_path(style_id).unlink(missing_ok=True)
+    return {"ok": True}
+
+
+@app.post("/api/styles/{style_id}/reference")
+async def set_reference(style_id: str, image: UploadFile = File(...)):
+    raw = await image.read()
+    if len(raw) > MAX_UPLOAD:
+        raise HTTPException(413, "הקובץ גדול מ-20MB")
+    _style_or_404(_load(STYLES_FILE, []), style_id)
+    _ref_path(style_id).write_bytes(_normalize(raw)[0])
+    return {"ok": True}
+
+
+@app.delete("/api/styles/{style_id}/reference")
+def delete_reference(style_id: str):
+    _ref_path(style_id).unlink(missing_ok=True)
     return {"ok": True}
 
 
@@ -116,7 +152,9 @@ def delete_style(style_id: str):
 def preview_prompt(payload: dict):
     styles = _load(STYLES_FILE, [])
     style = _style_or_404(styles, payload.get("style_id", ""))
-    return {"prompt": build_prompt(style, payload.get("notes", ""))}
+    has_ref = bool(payload.get("use_reference")) and _ref_path(style["id"]).exists()
+    return {"prompt": build_prompt(style, payload.get("notes", ""),
+                                   payload.get("product_type", ""), has_ref)}
 
 
 @app.post("/api/process")
@@ -126,6 +164,9 @@ async def process(
     provider: str = Form("gemini"),
     aspect: str = Form("original"),
     notes: str = Form(""),
+    product_type: str = Form(""),
+    use_reference: bool = Form(True),
+    variant: int = Form(1),
 ):
     raw = await image.read()
     if len(raw) > MAX_UPLOAD:
@@ -134,12 +175,17 @@ async def process(
     if not providers.available().get(provider):
         raise HTTPException(400, f"הספק {provider} אינו מוגדר (חסר מפתח API)")
 
+    if product_type not in PRODUCT_TYPES:
+        raise HTTPException(400, "סוג מאפה לא מוכר")
+
     img_bytes, mime = _normalize(raw)
-    prompt = build_prompt(style, notes)
+    ref = _ref_path(style_id)
+    reference = ref.read_bytes() if use_reference and provider != "local" and ref.exists() else None
+    prompt = build_prompt(style, notes, product_type, reference is not None)
     started = time.time()
     try:
         result = await run_in_threadpool(
-            providers.run, provider, img_bytes, mime, prompt, aspect)
+            providers.run, provider, img_bytes, mime, prompt, aspect, reference)
     except providers.ProviderError as e:
         raise HTTPException(502, str(e))
 
@@ -156,6 +202,9 @@ async def process(
         "provider": provider,
         "aspect": aspect,
         "notes": notes,
+        "product_type": product_type,
+        "used_reference": reference is not None,
+        "variant": variant,
         "created": int(time.time()),
         "seconds": round(time.time() - started, 1),
         "original": f"/files/originals/{job}.jpg",
@@ -171,6 +220,30 @@ async def process(
 @app.get("/api/history")
 def history():
     return _load(HISTORY_FILE, [])
+
+
+@app.get("/api/download")
+def download(ids: str):
+    """Zip the given results (comma-separated job ids) for one-click download."""
+    jobs = [j for j in ids.split(",") if re.fullmatch(r"[0-9a-f]{12}", j)]
+    by_id = {h["id"]: h for h in _load(HISTORY_FILE, [])}
+    buf, used = io.BytesIO(), set()
+    with zipfile.ZipFile(buf, "w") as zf:
+        for j in jobs:
+            path = RESULTS / f"{j}.jpg"
+            if j not in by_id or not path.exists():
+                continue
+            h = by_id[j]
+            stem = re.sub(r"[^\w-]+", "_", Path(h.get("filename") or j).stem)[:60] or j
+            name = f"{stem}-v{h.get('variant', 1)}.jpg"
+            if name in used:
+                name = f"{stem}-{j}.jpg"
+            used.add(name)
+            zf.write(path, name)
+    if not used:
+        raise HTTPException(404, "לא נמצאו תוצאות להורדה")
+    return Response(buf.getvalue(), media_type="application/zip",
+                    headers={"Content-Disposition": 'attachment; filename="bakery-studio.zip"'})
 
 
 @app.delete("/api/history/{job}")
