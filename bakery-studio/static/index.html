@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>סטודיו מאפים</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <span class="logo">🥐</span>
+      <div>
+        <h1>סטודיו מאפים</h1>
+        <p>מעלים תמונה של לחם או מאפה — מקבלים צילום סטודיו מקצועי בסגנון שלכם</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2><span class="step">1</span> העלאת תמונות</h2>
+      <label id="drop" class="drop">
+        <input id="files" type="file" accept="image/*" multiple hidden>
+        <strong>גררו לכאן תמונות</strong> או לחצו לבחירה
+        <small>JPG / PNG / WEBP · עד 20MB לתמונה · אפשר כמה בבת אחת</small>
+      </label>
+      <div id="queue" class="queue"></div>
+    </section>
+
+    <section class="panel">
+      <div class="row-between">
+        <h2><span class="step">2</span> בחירת סגנון צילום</h2>
+        <button id="newStyle" class="ghost">+ סגנון חדש</button>
+      </div>
+      <div id="styles" class="styles"></div>
+
+      <div class="options">
+        <label>מנוע
+          <select id="provider"></select>
+        </label>
+        <label>יחס תמונה
+          <select id="aspect">
+            <option value="original">כמו המקור</option>
+            <option value="1:1">1:1 · ריבוע (פיד)</option>
+            <option value="4:5">4:5 · אינסטגרם</option>
+            <option value="9:16">9:16 · סטורי</option>
+            <option value="3:2">3:2 · קלאסי</option>
+            <option value="16:9">16:9 · באנר</option>
+          </select>
+        </label>
+        <label class="grow">הערות לצילום הזה (לא חובה)
+          <input id="notes" placeholder="למשל: להדגיש את השומשום, להוסיף אדים עולים">
+        </label>
+      </div>
+      <details class="prompt-peek">
+        <summary>הצגת ההנחיה שנשלחת למודל</summary>
+        <pre id="promptText"></pre>
+      </details>
+      <button id="go" class="primary" disabled>✨ צלמו לי בסטודיו</button>
+      <p id="engineHint" class="hint"></p>
+    </section>
+
+    <section class="panel">
+      <h2><span class="step">3</span> התוצאות</h2>
+      <div id="gallery" class="gallery"></div>
+      <p id="empty" class="hint">עוד אין תוצאות. העלו תמונה ובחרו סגנון.</p>
+    </section>
+  </main>
+
+  <dialog id="styleDialog">
+    <form id="styleForm" method="dialog">
+      <h3 id="dialogTitle">סגנון חדש</h3>
+      <label>שם הסגנון<input name="name" required></label>
+      <label>משטח / רקע<textarea name="surface" rows="2" placeholder="שולחן עץ אלון כהה עם אבקת קמח"></textarea></label>
+      <label>תאורה<textarea name="lighting" rows="2" placeholder="אור חלון רך וחם מצד שמאל, תאורה אחורית שמבליטה את הקרום"></textarea></label>
+      <label>אביזרים וסטיילינג<textarea name="props" rows="2" placeholder="שיבולי חיטה, קערית מלח גס, סכין לחם וינטג'"></textarea></label>
+      <label>מצלמה וזווית<textarea name="camera" rows="2" placeholder="זווית 45°, עדשת 85 מ״מ, עומק שדה רדוד"></textarea></label>
+      <label>אווירה וצבעוניות<textarea name="mood" rows="2" placeholder="חם, זהוב, מזמין, בעבודת יד"></textarea></label>
+      <label>הנחיות נוספות<textarea name="extra" rows="2" placeholder="כל דבר נוסף שחשוב לכם"></textarea></label>
+      <p class="hint">אפשר לכתוב בעברית או באנגלית. אנגלית בדרך כלל נותנת תוצאות מדויקות יותר.</p>
+      <div class="dialog-actions">
+        <button type="button" id="deleteStyle" class="danger">מחיקה</button>
+        <span class="grow"></span>
+        <button type="button" id="cancelStyle" class="ghost">ביטול</button>
+        <button type="submit" class="primary">שמירה</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

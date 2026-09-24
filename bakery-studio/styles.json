@@ -1,0 +1,52 @@
+[
+  {
+    "id": "rustic",
+    "name": "מאפייה כפרית",
+    "surface": "a weathered dark oak table with a light dusting of flour, a folded natural linen cloth underneath",
+    "lighting": "soft warm window light from the left side, gentle falloff into shadow on the right, subtle rim light that makes the crust glisten",
+    "props": "a few scattered wheat stalks, a small ceramic bowl of coarse sea salt, a vintage bread knife, all slightly out of focus",
+    "camera": "45-degree angle, 85mm lens, shallow depth of field (f/2.8), the product sharp in the foreground",
+    "mood": "warm, golden, inviting; rich browns and ambers; artisan and handmade",
+    "extra": ""
+  },
+  {
+    "id": "nordic",
+    "name": "סקנדינבי בהיר",
+    "surface": "a clean white Carrara marble countertop",
+    "lighting": "bright diffused daylight from a large north-facing window, very soft shadows, airy high-key exposure",
+    "props": "a light ceramic plate, a sprig of fresh herbs, a cup of coffee softly blurred in the background",
+    "camera": "slightly elevated 30-degree angle, 50mm lens, moderate depth of field",
+    "mood": "fresh, minimal, calm; whites, creams and soft beige; clean editorial look",
+    "extra": ""
+  },
+  {
+    "id": "moody",
+    "name": "דרמטי כהה",
+    "surface": "a dark charcoal slate board on a deep black textured background",
+    "lighting": "single hard-ish key light from behind and to the side (chiaroscuro), strong backlight that outlines the crust and reveals texture, deep controlled shadows",
+    "props": "minimal: a dark linen napkin and a few crumbs, nothing distracting",
+    "camera": "low 20-degree angle, 100mm macro lens, very shallow depth of field",
+    "mood": "dramatic, luxurious, fine-dining; deep blacks with glowing golden crust",
+    "extra": ""
+  },
+  {
+    "id": "patisserie",
+    "name": "פטיסרי פריזאי",
+    "surface": "a pale pastel pink tabletop with a white lace doily",
+    "lighting": "soft even beauty lighting with a large softbox from the front-right, gentle highlights on glazes and sugar",
+    "props": "a vintage porcelain cup and saucer, a few fresh berries, a small bouquet of flowers blurred in the background",
+    "camera": "eye-level to 30-degree angle, 70mm lens, creamy bokeh",
+    "mood": "elegant, delicate, romantic; pastel palette, polished and refined",
+    "extra": ""
+  },
+  {
+    "id": "catalog",
+    "name": "רקע לבן לקטלוג",
+    "surface": "a seamless pure white studio background (#FFFFFF) with a soft natural contact shadow under the product",
+    "lighting": "professional three-point studio lighting, evenly lit, crisp detail, no color cast",
+    "props": "none - only the product",
+    "camera": "straight-on product shot, 100mm lens, everything in sharp focus, product centered with generous margins",
+    "mood": "clean, commercial, e-commerce ready; true-to-life colors",
+    "extra": ""
+  }
+]
