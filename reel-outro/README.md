@@ -125,3 +125,14 @@ python3 tools/extract_layers.py
 ```
 
 The label corners (`QUAD`) and crop box are constants in that script. If the new artwork's layout is different, re-fit them.
+
+## Intro version with music (8 s)
+
+`export/chatuna-bli-filterim-INTRO-with-music.mp4` opens with "Here Comes the Bride" on a synthesised organ (Wagner, 1850, public domain) while the glass draws in. As the shoe winds up, the organ slows to a stop. The glass smash lands where the word "white" should be, and a 125 bpm beat drops (4.16 s). The sticker lands on a clap (6.08 s), and the melody's last note arrives on the final hit (7.52 s).
+
+```bash
+python3 tools/make_soundtrack.py          # → export/intro-soundtrack.wav / .m4a
+node tools/render.mjs --version intro --audio export/intro-soundtrack.wav
+```
+
+Preview it with `index.html?version=intro`. Its timing lives in `CONFIG.introTimeline`.

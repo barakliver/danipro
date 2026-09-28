@@ -28,6 +28,7 @@
 
     // Authored timeline (seconds, at duration = 4.0).
     timeline: {
+      length:          4.0,
       glassDraw:      [0.06, 0.42],
       legEnter:       [0.10, 0.50],
       windUp:         [0.50, 0.64],
@@ -44,6 +45,27 @@
       rules:          [2.64, 3.04],
     },
 
+    // Intro version (?version=intro / render --version intro): 8 s, synced to
+    // tools/make_soundtrack.py — "Here Comes the Bride" on organ while the glass
+    // draws in, the shoe smashes it on "white" and the beat drops.
+    introTimeline: {
+      length:          8.0,
+      glassDraw:      [0.25, 2.20],
+      legEnter:       [2.86, 3.72],
+      windUp:         [3.72, 4.08],
+      impact:          4.16,          // = beat drop
+      stompLength:     0.08,
+      burstLength:     0.30,
+      shoeExit:       [4.30, 4.56],
+      assemble:       [4.59, 5.30],
+      wordComplete:    5.34,
+      labelStart:      5.80,
+      labelImpact:     6.08,          // on beat 4 of the first bar
+      labelSettle:     6.22,
+      names:          [6.26, 6.58],
+      rules:          [6.30, 6.70],
+    },
+
     fragments: { count: 16, seed: 20260928 },
 
     // Audio sync markers (seconds, at duration = 4.0) — also used by tools/render.mjs --sfx
@@ -57,7 +79,6 @@
     },
   };
 
-  const BASE_DURATION = 4.0;
   const GEO = window.OUTRO_GEOMETRY;
   const SVGNS = 'http://www.w3.org/2000/svg';
   const $ = (id) => document.getElementById(id);
@@ -275,8 +296,8 @@
   const setVis = (node, on) => node.setAttribute('display', on ? 'inline' : 'none');
 
   function renderAt(tIn) {
-    const t = clamp01(tIn / CONFIG.duration) * BASE_DURATION;   // authored time
     const T = CONFIG.timeline;
+    const t = clamp01(tIn / CONFIG.duration) * T.length;   // authored time
     const imp = T.impact;
     const stompStart = imp - T.stompLength;
     const burstEnd = imp + T.burstLength;
@@ -295,8 +316,9 @@
       `translate(${glassX} ${groundY}) scale(${CONFIG.glass.scale})`);
     glassPaths.forEach((p, i) => {
       const k = glassPaths.length;
-      const t0 = lerp(T.glassDraw[0], T.glassDraw[1] - 0.2, i / (k - 1));
-      const d = EASE.inOut(seg(t, t0, t0 + 0.2));
+      const dur = Math.max(0.2, (T.glassDraw[1] - T.glassDraw[0]) * 0.4);
+      const t0 = lerp(T.glassDraw[0], T.glassDraw[1] - dur, i / (k - 1));
+      const d = EASE.inOut(seg(t, t0, t0 + dur));
       p.setAttribute('stroke-dasharray', '1 1');
       p.setAttribute('stroke-dashoffset', f(1 - d));
     });
@@ -448,6 +470,12 @@
   const params = new URLSearchParams(location.search);
   const palette = params.get('palette') || CONFIG.palette;
   if (palette === 'brief') document.documentElement.setAttribute('data-palette', 'brief');
+  if (params.get('version') === 'intro') {
+    CONFIG.timeline = CONFIG.introTimeline;
+    CONFIG.duration = CONFIG.introTimeline.length;
+    const T = CONFIG.timeline;
+    CONFIG.audioMarkers = { beatDrop: T.impact, stickerImpact: T.labelImpact, end: T.length };
+  }
   if (params.has('duration')) CONFIG.duration = parseFloat(params.get('duration')) || CONFIG.duration;
 
   const imageUrls = Array.from(document.querySelectorAll('#stage image')).map((n) => n.getAttribute('href'));
@@ -464,7 +492,7 @@
     renderFrame: (i) => renderAt(i / CONFIG.fps),
     get totalFrames() { return Math.round(CONFIG.duration * CONFIG.fps); },
     markers: () => Object.fromEntries(Object.entries(CONFIG.audioMarkers)
-      .map(([k, v]) => [k, +(v * CONFIG.duration / BASE_DURATION).toFixed(3)])),
+      .map(([k, v]) => [k, +(v * CONFIG.duration / CONFIG.timeline.length).toFixed(3)])),
     ready,
   };
 

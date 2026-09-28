@@ -7,6 +7,7 @@
  *   node tools/render.mjs --frames           # also keep every PNG in out/frames/
  *   node tools/render.mjs --palette brief    # render with the brief's palette
  *   node tools/render.mjs --out path.mp4 --crf 14
+ *   node tools/render.mjs --version intro --audio export/intro-soundtrack.wav   # 8 s intro with music
  *
  * The page is loaded with ?render=1, so nothing animates on its own; for
  * frame i the script calls OUTRO.renderAt(i / fps) and screenshots the
@@ -29,9 +30,11 @@ const opt = (name, def) => {
   return i >= 0 && args[i + 1] ? args[i + 1] : def;
 };
 
-const OUT = path.resolve(ROOT, opt('out', 'out/outro.mp4'));
+const OUT = path.resolve(ROOT, opt('out', args.includes('intro') ? 'out/intro.mp4' : 'out/outro.mp4'));
 const CRF = opt('crf', '16');
 const PALETTE = opt('palette', '');
+const VERSION = opt('version', '');          // '' = outro, 'intro' = 8 s intro
+const AUDIO = opt('audio', '');              // optional soundtrack to mux in
 const WIDTH = 1080, HEIGHT = 1920;
 
 fs.mkdirSync(path.dirname(OUT), { recursive: true });
@@ -105,6 +108,7 @@ function sfxFilter(m, duration) {
 /* ---------------- main ---------------- */
 const query = new URLSearchParams({ render: '1' });
 if (PALETTE) query.set('palette', PALETTE);
+if (VERSION) query.set('version', VERSION);
 const url = pathToFileURL(path.join(ROOT, 'index.html')).href + '?' + query;
 
 const { browser, page, driver } = await openPage(url);
@@ -149,6 +153,16 @@ fs.writeFileSync(posterPath, await snap());
 await browser.close();
 
 fs.writeFileSync(OUT.replace(/\.mp4$/i, '') + '-audio-markers.json', JSON.stringify(info.markers, null, 2) + '\n');
+
+if (AUDIO) {
+  const withAudio = OUT.replace(/\.mp4$/i, '') + '-with-music.mp4';
+  const mux = ffmpeg(['-y', '-loglevel', 'error', '-i', OUT, '-i', path.resolve(ROOT, AUDIO),
+    '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '256k',
+    '-movflags', '+faststart', '-shortest', withAudio]);
+  mux.proc.stdin.end();
+  await mux.done;
+  console.log(`[render] with soundtrack → ${path.relative(ROOT, withAudio)}`);
+}
 
 if (flag('sfx')) {
   const sfxOut = OUT.replace(/\.mp4$/i, '') + '-sfx.mp4';
