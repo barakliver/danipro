@@ -1,0 +1,131 @@
+/* ------------------------------------------------------------------
+   חתונה בלי פילטרים — Reel outro
+   Brand colours live here. Every layer (including the logo masks) is
+   painted from these variables, so a change here recolours the render.
+   ------------------------------------------------------------------ */
+
+:root {
+  /* Default palette: sampled from the supplied logo (tools/extract_layers.py) */
+  --paper: #FDE2DD;       /* powder-pink background                  */
+  --wine: #680305;        /* חתונה, names, rules, glass, fragments    */
+  --cherry: #B10723;      /* בלי פילטרים label                         */
+  --label-text: #FDE2DD;  /* lettering knocked out of the label       */
+
+  /* Illustration (scenes 1-2) */
+  --trouser: #2A0A0F;
+  --trouser-line: #45161D;
+  --shoe: #140608;
+  --shoe-line: #3E1A1F;
+  --shoe-shine: #6B3A40;
+  --impact: #B10723;
+}
+
+/* Palette from the written brief. Enable with ?palette=brief or by setting
+   CONFIG.palette = 'brief' in animation.js. */
+:root[data-palette="brief"] {
+  --paper: #F4D4D2;
+  --wine: #72151C;
+  --cherry: #B8142C;
+  --label-text: #FFF4E9;
+  --impact: #B8142C;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #1b1416;
+  color: #eee;
+  font: 13px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* ---- Stage ------------------------------------------------------ */
+
+.viewport {
+  position: fixed;
+  inset: 0 0 56px 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.stage-frame {
+  width: 1080px;
+  height: 1920px;
+  transform-origin: center center;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, .45);
+}
+
+#stage {
+  display: block;
+  width: 1080px;
+  height: 1920px;
+  background: var(--paper);
+}
+
+/* Render mode: the page is exactly one frame, nothing else on screen. */
+html.render, html.render body { background: var(--paper); overflow: hidden; }
+html.render .viewport { inset: 0; display: block; }
+html.render .stage-frame { box-shadow: none; transform: none !important; }
+html.render .controls { display: none; }
+
+/* ---- SVG paint classes (presentation attributes can't take var()) -- */
+
+.paper-fill   { fill: var(--paper); }
+.wine-fill    { fill: var(--wine); }
+.cherry-fill  { fill: var(--cherry); }
+.label-text-fill { fill: var(--label-text); }
+.knockout     { fill: var(--paper); stroke: var(--paper); stroke-linejoin: miter; }
+
+.glass-line {
+  fill: none;
+  stroke: var(--wine);
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.glass-line.fine { stroke-width: 2; }
+
+.trouser      { fill: var(--trouser); }
+.trouser-line { fill: none; stroke: var(--trouser-line); stroke-width: 2.4; stroke-linecap: round; }
+.shoe         { fill: var(--shoe); }
+.shoe-line    { fill: none; stroke: var(--shoe-line); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.shoe-shine   { fill: none; stroke: var(--shoe-shine); stroke-width: 3; stroke-linecap: round; }
+
+.impact-line  { stroke: var(--impact); stroke-width: 5; stroke-linecap: round; fill: none; }
+
+.shard-solid  { fill: var(--wine); }
+.shard-edge   { fill: none; stroke: var(--wine); stroke-width: 1.4; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+
+.rule         { stroke: var(--wine); stroke-linecap: butt; }
+
+/* Instagram UI guides (?guides=1) */
+.guide-zone   { fill: rgba(0, 120, 255, .16); stroke: rgba(0, 120, 255, .7); stroke-width: 2; stroke-dasharray: 10 8; }
+.guide-label  { fill: rgba(0, 80, 200, .9); font: 600 26px system-ui, sans-serif; }
+
+/* ---- Preview controls ------------------------------------------ */
+
+.controls {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  background: #120d0e;
+  border-top: 1px solid #2c2224;
+}
+.controls button {
+  background: #2c2224; color: #f5e6e3; border: 1px solid #3d3033;
+  border-radius: 6px; padding: 6px 12px; font: inherit; cursor: pointer;
+}
+.controls button:hover { background: #3a2d30; }
+.controls input[type=range] { flex: 1; min-width: 80px; accent-color: #B10723; }
+.controls .readout { font-variant-numeric: tabular-nums; min-width: 132px; text-align: right; opacity: .85; }
+.controls label { display: flex; align-items: center; gap: 6px; white-space: nowrap; opacity: .85; }
+@media (max-width: 560px) {
+  .controls { gap: 8px; padding: 0 8px; }
+  .controls .hide-sm { display: none; }
+}

@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="he">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>חתונה בלי פילטרים — Reel outro</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="viewport">
+    <div class="stage-frame" id="stageFrame">
+      <!--
+        One 1080×1920 SVG stage. Every named <g id="layer-…"> is an
+        independent layer driven by animation.js.
+        Logo layers are the supplied artwork (assets/layers/*.png masks cut
+        from assets/source/logo-reference.png), recoloured via styles.css.
+      -->
+      <svg id="stage" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+           viewBox="0 0 1080 1920" width="1080" height="1920" role="img"
+           aria-label="חתונה בלי פילטרים — עם עדן חיימוב וברק ליור">
+        <defs>
+          <!-- Logo artwork masks (crop-box coordinates, 1040×670) -->
+          <mask id="mask-word" maskUnits="userSpaceOnUse" x="0" y="0" width="1040" height="670">
+            <image href="assets/layers/word-mask.png" x="0" y="0" width="1040" height="670"/>
+          </mask>
+          <mask id="mask-label-text" maskUnits="userSpaceOnUse" x="0" y="0" width="1040" height="670">
+            <image href="assets/layers/label-text-mask.png" x="0" y="0" width="1040" height="670"/>
+          </mask>
+          <mask id="mask-names" maskUnits="userSpaceOnUse" x="0" y="0" width="1040" height="670">
+            <image href="assets/layers/names-mask.png" x="0" y="0" width="1040" height="670"/>
+          </mask>
+
+          <!-- חתונה as a reusable symbol: fragments clip pieces out of it -->
+          <g id="word-art">
+            <rect class="wine-fill" x="0" y="0" width="1040" height="670" mask="url(#mask-word)"/>
+          </g>
+        </defs>
+
+        <rect class="paper-fill" x="0" y="0" width="1080" height="1920"/>
+
+        <!-- Scenes 1-3: illustration. #camera carries the impact scale punch. -->
+        <g id="camera">
+
+          <!-- Wedding glass: thin wine line art. Local origin = centre of the foot. -->
+          <g id="layer-glass">
+            <g class="glass-draw">
+              <ellipse class="glass-line" cx="0" cy="-160" rx="40" ry="7" pathLength="1"/>
+              <path class="glass-line" pathLength="1"
+                    d="M -40,-160 C -41,-118 -30,-92 0,-88 C 30,-92 41,-118 40,-160"/>
+              <path class="glass-line" pathLength="1" d="M 0,-88 L 0,-10"/>
+              <path class="glass-line" pathLength="1"
+                    d="M -32,-1 C -26,-8 -10,-10 0,-10 C 10,-10 26,-8 32,-1 Z"/>
+              <path class="glass-line fine" pathLength="1" d="M -29,-146 C -30,-128 -26,-114 -17,-105"/>
+              <path class="glass-line fine" pathLength="1" d="M 27,-151 L 28,-141"/>
+            </g>
+          </g>
+
+          <!-- Groom: trouser leg + formal shoe. Local origin = sole under the ball of the foot. -->
+          <g id="layer-groom">
+            <g id="layer-shoe">
+              <path class="shoe" d="
+                M -192,-9
+                C -197,-32 -180,-54 -140,-63
+                C -100,-72 -62,-82 -32,-100
+                L 40,-118 L 122,-124
+                C 142,-112 148,-72 146,-40
+                L 146,0 L 88,0 L 84,-13
+                C 40,-16 -18,-13 -58,-5
+                L -60,0 L -176,0
+                C -186,0 -191,-3 -192,-9 Z"/>
+              <path class="shoe-line" d="M -189,-10 L -60,-10"/>
+              <path class="shoe-line" d="M 88,-13 L 146,-13"/>
+              <path class="shoe-line" d="M -121,-65 C -111,-46 -113,-26 -123,-11"/>
+              <path class="shoe-line" d="M -52,-88 L -30,-80 M -40,-94 L -18,-86 M -28,-99 L -6,-92"/>
+              <path class="shoe-shine" d="M -176,-34 C -168,-48 -152,-56 -134,-59"/>
+            </g>
+            <g id="layer-leg">
+              <path class="trouser" d="
+                M -46,-2600 L -46,-106
+                C -46,-97 -39,-91 -30,-90
+                L 150,-58
+                C 159,-57 166,-63 166,-72
+                L 168,-2600 Z"/>
+              <path class="trouser-line" d="M 62,-2600 L 64,-86"/>
+              <path class="trouser-line" d="M -20,-150 C 18,-140 58,-128 104,-124" opacity=".55"/>
+            </g>
+          </g>
+
+          <!-- Graphic impact: short radial strokes (built in animation.js) -->
+          <g id="layer-impact"></g>
+
+          <!-- Glass fragments (built in animation.js) -->
+          <g id="layer-fragments"></g>
+        </g>
+
+        <!-- Scenes 3-6: the logo lockup. Crop-box coordinates, positioned by animation.js. -->
+        <g id="logo">
+          <g id="layer-word">
+            <use href="#word-art"/>
+          </g>
+
+          <g id="layer-label">
+            <polygon id="label-knockout" class="knockout"/>
+            <polygon id="label-fill" class="cherry-fill"/>
+            <rect class="label-text-fill" x="0" y="0" width="1040" height="670" mask="url(#mask-label-text)"/>
+          </g>
+
+          <g id="layer-names">
+            <g id="names-text">
+              <rect class="wine-fill" x="0" y="0" width="1040" height="670" mask="url(#mask-names)"/>
+            </g>
+            <line id="rule-left" class="rule"/>
+            <line id="rule-right" class="rule"/>
+          </g>
+        </g>
+
+        <!-- Instagram interface guides (preview only, ?guides=1) -->
+        <g id="guides" display="none"></g>
+      </svg>
+    </div>
+  </div>
+
+  <div class="controls" id="controls">
+    <button id="btnPlay" type="button">Pause</button>
+    <button id="btnStep" type="button" class="hide-sm" title="Next frame">+1f</button>
+    <input id="scrub" type="range" min="0" max="119" step="1" value="0" aria-label="Frame">
+    <span class="readout" id="readout">0.000s · f0</span>
+    <label class="hide-sm"><input type="checkbox" id="chkLoop" checked> loop</label>
+    <label class="hide-sm"><input type="checkbox" id="chkGuides"> IG guides</label>
+  </div>
+
+  <script src="assets/layers/geometry.js"></script>
+  <script src="animation.js"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "chatuna-bli-filterim-reel-outro",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Animated Instagram Reel outro for the podcast חתונה בלי פילטרים (1080x1920, 30fps, 4s)",
+  "type": "module",
+  "scripts": {
+    "preview": "npx http-server . -p 8080 -c-1",
+    "render": "node tools/render.mjs",
+    "render:sfx": "node tools/render.mjs --sfx",
+    "extract": "python3 tools/extract_layers.py"
+  },
+  "devDependencies": {
+    "puppeteer": "^23.0.0"
+  }
+}
