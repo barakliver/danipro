@@ -1,12 +1,19 @@
 {
-  "length": 15.4,
+  "length": 8.0,
   "bpm": 124,
   "beat": 0.48387,
-  "leadIn": 0.35,
-  "phrase2": 4.221,
-  "drop": 6.156,
-  "bar2": 8.092,
-  "bar3": 10.027,
-  "bar4": 11.963,
-  "finalHit": 13.898
+  "organNotes": [
+    0.25,
+    0.734,
+    1.097,
+    1.218,
+    2.185,
+    2.669,
+    3.032
+  ],
+  "drop": 3.153,
+  "wordLock": 4.605,
+  "stickerSlap": 5.089,
+  "namesSparkle": 6.056,
+  "finalHit": 7.024
 }

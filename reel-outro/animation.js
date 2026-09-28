@@ -45,28 +45,30 @@
       rules:          [2.64, 3.04],
     },
 
-    // Intro version (?version=intro / render --version intro): 15.4 s, locked
-    // to the podcast jingle (tools/make_soundtrack.py, 124 bpm, beat 0.48387 s).
-    // Organ phrase 1 draws the glass, phrase 2 brings the shoe, the smash is the
-    // beat drop, and each later step lands on a bar line.
+    // Intro version (?version=intro / render --version intro): 8 s, drawn
+    // note-for-note against the podcast jingle (tools/make_soundtrack.py,
+    // 124 bpm; markers in export/jingle-markers.json).
     introTimeline: {
-      length:         15.4,
-      glassDraw:      [0.35, 2.29],   // "Here comes the bride"
-      legEnter:       [4.22, 5.20],   // "all dressed in…"
-      windUp:         [5.20, 6.076],
-      impact:          6.156,         // beat drop
+      length:          8.0,
+      glassDraw:      [0.25, 1.70],
+      // each organ note of "Here comes the bride" draws one part of the glass
+      // (DOM order: rim, bowl, stem, foot, highlight, highlight)
+      glassNotes:     [0.734, 0.25, 1.097, 1.218, 1.34, 1.42],
+      legEnter:       [1.70, 2.30],   // arrives on "all"
+      windUp:         [2.35, 3.073],  // "dressed in…" + snare roll
+      impact:          3.153,         // smash = beat drop
       stompLength:     0.08,
       burstLength:     0.30,
-      shoeExit:       [6.30, 6.56],
-      assemble:       [6.64, 7.80],
-      wordComplete:    7.84,
-      labelStart:      7.81,
-      labelImpact:     8.092,         // bar 2 downbeat
-      labelSettle:     8.23,
-      names:          [10.027, 10.36],// bar 3 downbeat
-      rules:          [10.07, 10.47],
-      // Lockup breathes with the kick (bars 2–4), bigger on the final hit.
-      pulses: { from: 8.575, to: 13.42, beat: 0.48387, amp: 0.008, final: 13.898, finalAmp: 0.022 },
+      shoeExit:       [3.29, 3.55],
+      assemble:       [3.52, 4.605],  // whoosh …
+      wordComplete:    4.605,         // … glass "ting"
+      labelStart:      4.81,
+      labelImpact:     5.089,         // paper slap, bar 2 beat 1
+      labelSettle:     5.23,
+      names:          [6.056, 6.36],  // sparkle, bar 2 beat 3
+      rules:          [6.09, 6.46],
+      // [time, amount]: lockup pops on the ting, the kicks of bar 2 and the final chord
+      pulses:         [[4.605, 0.012], [5.573, 0.008], [6.057, 0.008], [6.541, 0.008], [7.024, 0.024]],
     },
 
     fragments: { count: 16, seed: 20260928 },
@@ -308,11 +310,7 @@
     /* -- lockup pulse on the beat (intro only) ----------------------- */
     let pulse = 1;
     const P = T.pulses;
-    if (P) {
-      const hit = (p, amp) => (t >= p ? amp * Math.exp(-(t - p) / 0.11) : 0);
-      for (let p = P.from; p <= P.to + 1e-6; p += P.beat) pulse += hit(p, P.amp);
-      pulse += hit(P.final, P.finalAmp);
-    }
+    if (P) for (const [p, amp] of P) if (t >= p) pulse += amp * Math.exp(-(t - p) / 0.11);
     $('logo').setAttribute('transform',
       `translate(${f(L.centerX)} ${f(L.centerY)}) scale(${f(L.scale * pulse)}) translate(${f(-lockCX)} ${f(-lockCY)})`);
 
@@ -326,12 +324,14 @@
     /* -- glass ------------------------------------------------------- */
     const glassOn = t >= T.glassDraw[0] && t < imp;
     setVis($('layer-glass'), glassOn);
+    let gpop = 1;   // intro: the glass pops a little on each organ note
+    if (T.glassNotes) for (const n of T.glassNotes.slice(0, 4)) if (t >= n) gpop += 0.035 * Math.exp(-(t - n) / 0.12);
     $('layer-glass').setAttribute('transform',
-      `translate(${glassX} ${groundY}) scale(${CONFIG.glass.scale})`);
+      `translate(${glassX} ${groundY}) scale(${f(CONFIG.glass.scale * gpop)})`);
     glassPaths.forEach((p, i) => {
       const k = glassPaths.length;
-      const dur = Math.max(0.2, (T.glassDraw[1] - T.glassDraw[0]) * 0.4);
-      const t0 = lerp(T.glassDraw[0], T.glassDraw[1] - dur, i / (k - 1));
+      const dur = T.glassNotes ? 0.26 : Math.max(0.2, (T.glassDraw[1] - T.glassDraw[0]) * 0.4);
+      const t0 = T.glassNotes ? T.glassNotes[i] : lerp(T.glassDraw[0], T.glassDraw[1] - dur, i / (k - 1));
       const d = EASE.inOut(seg(t, t0, t0 + dur));
       p.setAttribute('stroke-dasharray', '1 1');
       p.setAttribute('stroke-dashoffset', f(1 - d));
@@ -488,7 +488,7 @@
     CONFIG.timeline = CONFIG.introTimeline;
     CONFIG.duration = CONFIG.introTimeline.length;
     const T = CONFIG.timeline;
-    CONFIG.audioMarkers = { beatDrop: T.impact, stickerImpact: T.labelImpact, namesReveal: T.names[0], finalHit: T.pulses.final, end: T.length };
+    CONFIG.audioMarkers = { beatDrop: T.impact, stickerImpact: T.labelImpact, namesReveal: T.names[0], finalHit: T.pulses[T.pulses.length - 1][0], end: T.length };
   }
   if (params.has('duration')) CONFIG.duration = parseFloat(params.get('duration')) || CONFIG.duration;
 

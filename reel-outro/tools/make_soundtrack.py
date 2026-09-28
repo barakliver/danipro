@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 """
-Podcast opening jingle for חתונה בלי פילטרים (~15.4 s, 48 kHz stereo).
-Synthesised from scratch — no samples, no recordings.
+Podcast opening jingle for חתונה בלי פילטרים (8.0 s, 48 kHz stereo), written
+note-for-note against the animation. Synthesised from scratch, no samples.
 
-One tempo throughout (124 bpm) so the two worlds flow into each other:
+124 bpm throughout. Every sound has a picture:
 
-  A  0.35–6.16  "Here Comes the Bride" (Wagner, 1850 — public domain) on organ,
-                in half-time of the beat. Under "all dressed in…" a heartbeat
-                kick, a rising sweep and a snare roll build up, then a breath.
-  ↓  6.16       "white" is replaced by a glass smash: the beat drops.
-  B  bars 1–4   bouncy beat (C · Am · F · G). A pluck replays the bridal melody;
-                the organ chords come back in bars 3–4 to tie both halves together.
-  ✓  13.90      "white" finally resolves on C major, then a reverb tail.
+  0.25  "Here comes the bride" on organ (Wagner 1850, public domain)
+        — each of the four notes draws a part of the wedding glass
+  2.19  "all dressed in…" + snare roll — the groom's shoe comes down
+  3.15  smash instead of "white" — glass breaks, BEAT DROPS
+  3.5   whoosh as the shards fly back … glass "ting" when חתונה locks (4.60)
+  5.09  paper slap — בלי פילטרים sticker lands (bar 2, beat 1)
+  6.06  sparkle — host names appear (bar 2, beat 3)
+  7.02  "white" finally resolves on C major — the logo pops, then holds
 
-Also drives the intro video: CONFIG.introTimeline in animation.js uses the
-same markers (written to export/jingle-markers.json).
+Markers go to export/jingle-markers.json and match CONFIG.introTimeline.
 
 Usage:  python3 tools/make_soundtrack.py   → export/podcast-jingle.{wav,m4a,mp3}
 Needs:  numpy, scipy (and ffmpeg for m4a/mp3). Deterministic (fixed seed).
@@ -34,10 +34,10 @@ SR = 48000
 BPM = 124
 B = 60 / BPM                 # one beat
 STEP = B / 4                 # 16th
-LEAD_IN = 0.35
-DROP = LEAD_IN + 12 * B      # glass smash / beat drop
-FINAL = DROP + 16 * B        # last hit, 4 bars after the drop
-LENGTH = round(FINAL + 1.5, 2)
+LEAD_IN = 0.25
+DROP = LEAD_IN + 6 * B       # glass smash / beat drop (3.153 s)
+FINAL = DROP + 8 * B         # last hit, 2 bars after the drop (7.024 s)
+LENGTH = 8.0
 rng = np.random.default_rng(1850)
 N = int(SR * LENGTH)
 
@@ -220,6 +220,40 @@ def organ_bus(melody, chords, length, mel_gain=0.9, ch_gain=0.42):
     return bus
 
 
+def chime(dur=1.2):
+    """Bright glass 'ting' — the word locking into place."""
+    t = tvec(dur)
+    out = np.zeros_like(t)
+    for f, a, d in ((2093, 0.5, 0.5), (3136, 0.3, 0.35), (4186, 0.22, 0.25), (6272, 0.12, 0.15)):
+        out += a * np.sin(2 * np.pi * f * t) * np.exp(-t / d)
+    return out * env_adsr(len(t), 0.002, 0.05) * 0.35
+
+
+def sparkle(dur=0.6):
+    """Quick rising glitter — names reveal."""
+    out = np.zeros(int(dur * SR))
+    for k, m in enumerate((84, 88, 91, 96, 100)):
+        c = np.sin(2 * np.pi * midi(m) * tvec(0.5)) * np.exp(-tvec(0.5) / 0.12) * 0.12
+        i = int(k * 0.035 * SR)
+        out[i:i + len(c)] += c[: len(out) - i]
+    return out
+
+
+def whoosh(dur):
+    """Air swelling toward the chime as the shards travel."""
+    t = tvec(dur)
+    n = filt(rng.standard_normal(len(t)), "band", [1500, 7000])
+    return n * np.sin(np.pi * np.clip(t / dur, 0, 1) * 0.5) ** 3 * 0.18
+
+
+def slap():
+    """Paper sticker slap."""
+    t = tvec(0.25)
+    n = filt(rng.standard_normal(len(t)), "band", [500, 5000]) * np.exp(-t / 0.025)
+    thump = np.sin(2 * np.pi * 110 * t) * np.exp(-t / 0.05)
+    return (n * 0.9 + thump * 0.6)
+
+
 def main():
     mix = np.zeros((2, N))
     drums = np.zeros((2, N))
@@ -227,88 +261,88 @@ def main():
     L = LEAD_IN
     at = lambda beats: L + beats * B
 
-    # ---------------- A: organ, half-time ----------------
-    melody = [(at(0), 2 * B, 67), (at(2), 1.5 * B, 72), (at(3.5), 0.5 * B, 72), (at(4), 4 * B, 72),
-              (at(8), 2 * B, 67), (at(10), 1.5 * B, 74), (at(11.5), 0.4 * B, 71)]
-    chords = [(at(0), 2 * B, [55]),
-              (at(2), 6 * B, [36, 48, 52, 55, 60]),        # C
-              (at(8), 2 * B, [43, 48, 52, 55]),            # C/G
-              (at(10), 1.9 * B, [43, 47, 50, 53, 55])]     # G7 … breath
+    # ---------------- A: organ ----------------
+    melody = [(at(0), B, 67), (at(1), 0.75 * B, 72), (at(1.75), 0.25 * B, 72), (at(2), 2 * B, 72),
+              (at(4), B, 67), (at(5), 0.75 * B, 74), (at(5.75), 0.22 * B, 71)]
+    chords = [(at(0), B, [55]),
+              (at(1), 3 * B, [36, 48, 52, 55, 60]),        # C
+              (at(4), B, [43, 48, 52, 55]),                # C/G
+              (at(5), 0.95 * B, [43, 47, 50, 53, 55])]     # G7 … breath
     org = organ_bus(melody, chords, DROP + 0.3)
-    org[:, int((DROP - 0.06) * SR):] *= 0                   # the breath before the drop
-    org = reverb(org, reverb_ir(2.6, 0.75, 7), 0.55)
+    org[:, int((DROP - 0.05) * SR):] *= 0
+    org = reverb(org, reverb_ir(2.2, 0.6, 7), 0.5)
     tail = int(DROP * SR)
     org[:, tail:] *= np.exp(-np.arange(org.shape[1] - tail) / (0.10 * SR))[None, :] * 0.4
     mix[:, : org.shape[1]] += org[:, :N] * 0.5
 
     # build-up under "all dressed in…"
-    for k in range(4):
-        hb = kick() * 0.35
-        place(drums, at(8 + k), filt(hb, "low", 180) * (0.5 + 0.17 * k), gain=1.0)
-    place(mix, at(8), riser(4 * B), gain=0.9)
-    place(drums, at(11), snare_roll(B * 0.92), pan=0.05, gain=0.55)
+    place(drums, at(4), filt(kick() * 0.35, "low", 180) * 0.6)
+    place(drums, at(4.5), filt(kick() * 0.35, "low", 180) * 0.8)
+    place(mix, at(4), riser(2 * B), gain=0.9)
+    place(drums, at(5), snare_roll(B * 0.92), pan=0.05, gain=0.55)
 
     # ---------------- drop ----------------
     place(mix, DROP, glass_smash(), gain=1.0)
     place(drums, DROP, crash(), pan=0.25)
+    WORD = DROP + 3 * B            # word locks
+    STICKER = DROP + 4 * B         # bar 2 beat 1
+    NAMES = DROP + 6 * B           # bar 2 beat 3
+    place(mix, DROP + 0.38, whoosh(WORD - DROP - 0.38), pan=0.0)
+    place(mix, WORD, chime(), gain=0.9)
+    place(mix, STICKER, slap(), gain=0.8)
+    place(mix, NAMES, sparkle(), pan=0.1, gain=1.0)
 
     kicks = []
-    for bt in range(16):
+    for bt in range(8):
         tb = DROP + bt * B
         place(drums, tb, kick(big=(bt == 0)), gain=1.0)
         kicks.append(tb)
-        if bt % 2 == 1 and bt != 15:
-            big = bt in (3, 7)                        # sticker slap, names reveal pick-ups
-            place(drums, tb, clap(big=big), pan=0.05, gain=1.2 if big else 1.0)
-    for s16 in range(60):
+        if bt % 2 == 1 and bt != 7:
+            place(drums, tb, clap(), pan=0.05)
+    for s16 in range(28):
         ts = DROP + s16 * STEP
         if s16 % 4 == 2:
             place(drums, ts, hat(True), pan=0.3, gain=0.5)
         elif s16 % 4 != 0:
             place(drums, ts, hat(False), pan=-0.3, gain=0.45 if s16 % 2 else 0.3)
-    # fill into the final hit
-    place(drums, DROP + 15 * B, snare_roll(B * 0.95), pan=-0.05, gain=0.7)
-    place(mix, DROP + 13 * B, riser(3 * B), gain=0.6)
+    place(drums, DROP + 7 * B, snare_roll(B * 0.95), pan=-0.05, gain=0.7)
 
-    # bass, one chord per bar
+    # C → Am | F → G, two beats each
     prog = [(36, [60, 64, 67]), (33, [57, 60, 64]), (29, [53, 57, 60]), (31, [55, 59, 62])]
-    for bar, (root, ch) in enumerate(prog):
-        base = DROP + bar * 4 * B
-        for st, o in ((0, 0), (3, 12), (6, 0), (8, 0), (11, 12), (14, 0)):
-            if bar == 3 and st >= 12:
+    for half, (root, ch) in enumerate(prog):
+        base = DROP + half * 2 * B
+        for st, o in ((0, 0), (3, 12), (6, 0)):
+            if half == 3 and st == 6:
                 continue
             place(music, base + st * STEP, bass(root + o, STEP * 2.6))
-        for st in (2, 6, 10, 14):
-            if bar == 3 and st == 14:
+        for st in (2, 6):
+            if half == 3 and st == 6:
                 continue
             sb = stab(ch)
             i = int((base + st * STEP) * SR)
             music[:, i:i + sb.shape[1]] += sb[:, : N - i]
 
-    # lead: the bridal melody, double time — answers an octave up in bars 3–4
-    motif_a = [(0, 67), (3, 72), (4, 72), (6, 72)]
-    motif_b = [(0, 67), (3, 74), (4, 71), (6, 72)]
-    lead = ([(s, m) for s, m in motif_a] + [(16 + s, m) for s, m in motif_b] +
-            [(32 + s, m + 12) for s, m in motif_a] + [(48 + s, m + 12) for s, m in motif_b[:3]])
+    # lead: the bridal melody in double time, answered an octave up; "white" waits for the final hit
+    lead = [(0, 67), (3, 72), (4, 72), (6, 72), (8, 67), (11, 74), (12, 71), (14, 72),
+            (16, 79), (19, 84), (20, 84), (22, 84), (24, 79), (26, 86), (27, 83)]
     for st, m in lead:
         place(music, DROP + st * STEP, pluck(m), pan=0.12, gain=0.9)
-
-    # organ returns under bars 3–4 (the classical side, now on the beat)
-    org2 = organ_bus([], [(DROP + 8 * B, 4 * B, [53, 57, 60, 65]),
-                          (DROP + 12 * B, 3.6 * B, [55, 59, 62, 67])], LENGTH, ch_gain=0.22)
+    # organ returns in bar 2 (classical meets the beat)
+    org2 = organ_bus([], [(STICKER, 2 * B, [53, 57, 60, 65]), (STICKER + 2 * B, 1.9 * B, [55, 59, 62, 67])],
+                     LENGTH, ch_gain=0.22)
     music += org2[:, :N]
 
-    # ---------------- final hit: "white" resolves on C ----------------
+    # ---------------- final hit ----------------
     place(drums, FINAL, kick(big=True), gain=1.0)
     place(drums, FINAL, crash(), pan=-0.25)
     place(music, FINAL, bass(36, 0.8), gain=1.2)
     for m, p in ((48, 0), (60, -0.3), (64, 0.3), (67, -0.2), (72, 0.2), (84, 0)):
         place(music, FINAL, pluck(m, 0.8, 7000), pan=p, gain=0.55)
-    fin = organ_bus([(FINAL, 1.1, 72)], [(FINAL, 1.2, [36, 48, 52, 55, 60])], LENGTH - FINAL + 0.2,
+    fin = organ_bus([(FINAL, 0.8, 72)], [(FINAL, 0.9, [36, 48, 52, 55, 60])], LENGTH - FINAL + 0.2,
                     mel_gain=0.5, ch_gain=0.25)
     place(mix, FINAL, fin[0], pan=-0.4)
     place(mix, FINAL, fin[1], pan=0.4)
-    place(mix, FINAL, glass_smash() * 0.3)
+    place(mix, FINAL, chime() * 0.6)
 
     duck = np.ones(N)
     for tk in kicks:
@@ -319,7 +353,7 @@ def main():
 
     mix += reverb(music + drums * 0.15, reverb_ir(1.8, 0.4, 11), 0.2) + drums * 0.85
 
-    fo = int((LENGTH - 0.6) * SR)
+    fo = int((LENGTH - 0.45) * SR)
     mix[:, fo:] *= np.linspace(1, 0, N - fo)[None, :] ** 2
     mix = np.tanh(mix * 0.9) / np.tanh(0.9)
     mix *= 0.89 / np.max(np.abs(mix))
@@ -333,10 +367,10 @@ def main():
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", OUT, "-c:a", "aac", "-b:a", "256k", base + ".m4a"], check=True)
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", OUT, "-c:a", "libmp3lame", "-b:a", "320k", base + ".mp3"], check=True)
 
-    markers = {"length": LENGTH, "bpm": BPM, "beat": round(B, 5), "leadIn": LEAD_IN,
-               "phrase2": round(at(8), 3), "drop": round(DROP, 3),
-               "bar2": round(DROP + 4 * B, 3), "bar3": round(DROP + 8 * B, 3),
-               "bar4": round(DROP + 12 * B, 3), "finalHit": round(FINAL, 3)}
+    r = lambda v: round(v, 3)
+    markers = {"length": LENGTH, "bpm": BPM, "beat": round(B, 5),
+               "organNotes": [r(m[0]) for m in melody], "drop": r(DROP), "wordLock": r(WORD),
+               "stickerSlap": r(STICKER), "namesSparkle": r(NAMES), "finalHit": r(FINAL)}
     with open(os.path.join(ROOT, "export", "jingle-markers.json"), "w") as f:
         json.dump(markers, f, indent=2)
     print(json.dumps(markers))

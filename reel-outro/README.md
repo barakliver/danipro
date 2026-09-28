@@ -126,34 +126,25 @@ python3 tools/extract_layers.py
 
 The label corners (`QUAD`) and crop box are constants in that script. If the new artwork's layout is different, re-fit them.
 
-## Podcast jingle + intro video (15.4 s)
+## Podcast jingle + intro video (8 s)
 
 | File | What |
 | --- | --- |
-| `export/podcast-jingle.mp3` / `.m4a` / `.wav` | Audio-only opening jingle for podcast episodes |
-| `export/chatuna-bli-filterim-INTRO.mp4` | The animation locked to the jingle, with sound |
-| `export/jingle-markers.json` | Musical markers (drop, bar lines, final hit) |
+| `export/chatuna-bli-filterim-INTRO.mp4` | Animation and jingle together (8 s, with sound) |
+| `export/podcast-jingle.mp3` / `.m4a` / `.wav` | The jingle as audio only |
+| `export/jingle-markers.json` | The exact time of each sync point |
 
-The whole jingle runs at 124 bpm, so the classical opening and the beat stay in time with each other:
+Tempo is 124 bpm, and every sound is tied to something on screen:
 
-- **0.35–6.16 s:** "Here Comes the Bride" on organ (Wagner, 1850, public domain), played in half-time of the beat. Under "all dressed in…" a heartbeat kick, a rising sweep and a snare roll build up to a short breath.
-- **6.16 s:** a glass smash takes the place of "white", and the beat drops.
-- **4 bars after the drop (C · Am · F · G):** a pluck replays the bridal melody. In bars 3–4 the organ chords return to connect the two halves.
-- **13.90 s:** "white" finally resolves on C major, followed by a reverb tail.
-
-The video follows the music:
-
-| Musical moment | Animation |
-| --- | --- |
-| Phrase 1 | The glass draws in |
-| Phrase 2 | The shoe comes down |
-| The drop | The smash |
-| Bar 2 | The sticker slap |
-| Bar 3 | The names |
-| Kicks in bars 2–4 | The lockup pulses subtly |
-| Final hit | A slightly bigger pulse |
-
-The last frame is the static logo.
+| Time | Sound | Picture |
+| --- | --- | --- |
+| 0.25–1.22 | "Here comes the bride" on organ (Wagner, 1850, public domain) | Each note draws a part of the glass, which pops slightly |
+| 2.19 | "all dressed in…" and a snare roll | The shoe arrives and winds up |
+| 3.15 | A smash in place of "white"; the beat drops | The glass breaks |
+| 3.5–4.60 | A whoosh, then a glass "ting" | Shards fly back and חתונה locks into place |
+| 5.09 | Paper slap | The sticker lands |
+| 6.06 | Sparkle | The names appear |
+| 7.02 | "white" resolves on C major | The logo pops, then holds |
 
 ```bash
 python3 tools/make_soundtrack.py          # → export/podcast-jingle.* + jingle-markers.json
