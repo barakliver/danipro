@@ -45,25 +45,28 @@
       rules:          [2.64, 3.04],
     },
 
-    // Intro version (?version=intro / render --version intro): 8 s, synced to
-    // tools/make_soundtrack.py — "Here Comes the Bride" on organ while the glass
-    // draws in, the shoe smashes it on "white" and the beat drops.
+    // Intro version (?version=intro / render --version intro): 15.4 s, locked
+    // to the podcast jingle (tools/make_soundtrack.py, 124 bpm, beat 0.48387 s).
+    // Organ phrase 1 draws the glass, phrase 2 brings the shoe, the smash is the
+    // beat drop, and each later step lands on a bar line.
     introTimeline: {
-      length:          8.0,
-      glassDraw:      [0.25, 2.20],
-      legEnter:       [2.86, 3.72],
-      windUp:         [3.72, 4.08],
-      impact:          4.16,          // = beat drop
+      length:         15.4,
+      glassDraw:      [0.35, 2.29],   // "Here comes the bride"
+      legEnter:       [4.22, 5.20],   // "all dressed in…"
+      windUp:         [5.20, 6.076],
+      impact:          6.156,         // beat drop
       stompLength:     0.08,
       burstLength:     0.30,
-      shoeExit:       [4.30, 4.56],
-      assemble:       [4.59, 5.30],
-      wordComplete:    5.34,
-      labelStart:      5.80,
-      labelImpact:     6.08,          // on beat 4 of the first bar
-      labelSettle:     6.22,
-      names:          [6.26, 6.58],
-      rules:          [6.30, 6.70],
+      shoeExit:       [6.30, 6.56],
+      assemble:       [6.64, 7.80],
+      wordComplete:    7.84,
+      labelStart:      7.81,
+      labelImpact:     8.092,         // bar 2 downbeat
+      labelSettle:     8.23,
+      names:          [10.027, 10.36],// bar 3 downbeat
+      rules:          [10.07, 10.47],
+      // Lockup breathes with the kick (bars 2–4), bigger on the final hit.
+      pulses: { from: 8.575, to: 13.42, beat: 0.48387, amp: 0.008, final: 13.898, finalAmp: 0.022 },
     },
 
     fragments: { count: 16, seed: 20260928 },
@@ -302,6 +305,17 @@
     const stompStart = imp - T.stompLength;
     const burstEnd = imp + T.burstLength;
 
+    /* -- lockup pulse on the beat (intro only) ----------------------- */
+    let pulse = 1;
+    const P = T.pulses;
+    if (P) {
+      const hit = (p, amp) => (t >= p ? amp * Math.exp(-(t - p) / 0.11) : 0);
+      for (let p = P.from; p <= P.to + 1e-6; p += P.beat) pulse += hit(p, P.amp);
+      pulse += hit(P.final, P.finalAmp);
+    }
+    $('logo').setAttribute('transform',
+      `translate(${f(L.centerX)} ${f(L.centerY)}) scale(${f(L.scale * pulse)}) translate(${f(-lockCX)} ${f(-lockCY)})`);
+
     /* -- camera: tiny scale punch on impact -------------------------- */
     let punch = 0;
     if (t >= imp) punch = 1 - EASE.enter(seg(t, imp, imp + 0.18));
@@ -474,7 +488,7 @@
     CONFIG.timeline = CONFIG.introTimeline;
     CONFIG.duration = CONFIG.introTimeline.length;
     const T = CONFIG.timeline;
-    CONFIG.audioMarkers = { beatDrop: T.impact, stickerImpact: T.labelImpact, end: T.length };
+    CONFIG.audioMarkers = { beatDrop: T.impact, stickerImpact: T.labelImpact, namesReveal: T.names[0], finalHit: T.pulses.final, end: T.length };
   }
   if (params.has('duration')) CONFIG.duration = parseFloat(params.get('duration')) || CONFIG.duration;
 

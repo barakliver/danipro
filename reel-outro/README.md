@@ -126,13 +126,38 @@ python3 tools/extract_layers.py
 
 The label corners (`QUAD`) and crop box are constants in that script. If the new artwork's layout is different, re-fit them.
 
-## Intro version with music (8 s)
+## Podcast jingle + intro video (15.4 s)
 
-`export/chatuna-bli-filterim-INTRO-with-music.mp4` opens with "Here Comes the Bride" on a synthesised organ (Wagner, 1850, public domain) while the glass draws in. As the shoe winds up, the organ slows to a stop. The glass smash lands where the word "white" should be, and a 125 bpm beat drops (4.16 s). The sticker lands on a clap (6.08 s), and the melody's last note arrives on the final hit (7.52 s).
+| File | What |
+| --- | --- |
+| `export/podcast-jingle.mp3` / `.m4a` / `.wav` | Audio-only opening jingle for podcast episodes |
+| `export/chatuna-bli-filterim-INTRO.mp4` | The animation locked to the jingle, with sound |
+| `export/jingle-markers.json` | Musical markers (drop, bar lines, final hit) |
+
+The whole jingle runs at 124 bpm, so the classical opening and the beat stay in time with each other:
+
+- **0.35–6.16 s:** "Here Comes the Bride" on organ (Wagner, 1850, public domain), played in half-time of the beat. Under "all dressed in…" a heartbeat kick, a rising sweep and a snare roll build up to a short breath.
+- **6.16 s:** a glass smash takes the place of "white", and the beat drops.
+- **4 bars after the drop (C · Am · F · G):** a pluck replays the bridal melody. In bars 3–4 the organ chords return to connect the two halves.
+- **13.90 s:** "white" finally resolves on C major, followed by a reverb tail.
+
+The video follows the music:
+
+| Musical moment | Animation |
+| --- | --- |
+| Phrase 1 | The glass draws in |
+| Phrase 2 | The shoe comes down |
+| The drop | The smash |
+| Bar 2 | The sticker slap |
+| Bar 3 | The names |
+| Kicks in bars 2–4 | The lockup pulses subtly |
+| Final hit | A slightly bigger pulse |
+
+The last frame is the static logo.
 
 ```bash
-python3 tools/make_soundtrack.py          # → export/intro-soundtrack.wav / .m4a
-node tools/render.mjs --version intro --audio export/intro-soundtrack.wav
+python3 tools/make_soundtrack.py          # → export/podcast-jingle.* + jingle-markers.json
+node tools/render.mjs --version intro --audio export/podcast-jingle.wav
 ```
 
 Preview it with `index.html?version=intro`. Its timing lives in `CONFIG.introTimeline`.
