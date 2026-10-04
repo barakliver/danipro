@@ -1,0 +1,94 @@
+HYPERFRAMES_CAPTURE_PHASE {"schema":"hyperframes.capture.phase.v1","phase":"browser","status":"started","remainingMs":null}
+HYPERFRAMES_CAPTURE_PHASE {"schema":"hyperframes.capture.phase.v1","phase":"browser","status":"completed","remainingMs":null}
+HYPERFRAMES_CAPTURE_PHASE {"schema":"hyperframes.capture.phase.v1","phase":"navigation","status":"started","remainingMs":null}
+HYPERFRAMES_CAPTURE_PHASE {"schema":"hyperframes.capture.phase.v1","phase":"navigation","status":"completed","remainingMs":null}
+HYPERFRAMES_CAPTURE_PHASE {"schema":"hyperframes.capture.phase.v1","phase":"core-extraction","status":"started","remainingMs":null}
+HYPERFRAMES_CAPTURE_PHASE {"schema":"hyperframes.capture.phase.v1","phase":"core-extraction","status":"completed","remainingMs":89896}
+HYPERFRAMES_CAPTURE_PHASE {"schema":"hyperframes.capture.phase.v1","phase":"fonts","status":"started","remainingMs":89895}
+HYPERFRAMES_CAPTURE_PHASE {"schema":"hyperframes.capture.phase.v1","phase":"fonts","status":"completed","remainingMs":88180}
+Font metadata extracted: Assistant (variable) × 3, Caveat (variable) × 4, Heebo (variable) × 5
+HYPERFRAMES_CAPTURE_PHASE {"schema":"hyperframes.capture.phase.v1","phase":"assets","status":"started","remainingMs":88072}
+HYPERFRAMES_CAPTURE_PHASE {"schema":"hyperframes.capture.phase.v1","phase":"assets","status":"completed","remainingMs":87434}
+HYPERFRAMES_CAPTURE_PHASE {"schema":"hyperframes.capture.phase.v1","phase":"vision","status":"started","remainingMs":87430}
+HYPERFRAMES_CAPTURE_PHASE {"schema":"hyperframes.capture.phase.v1","phase":"vision","status":"completed","remainingMs":87429}
+HYPERFRAMES_CAPTURE_PHASE {"schema":"hyperframes.capture.phase.v1","phase":"contact-sheets","status":"started","remainingMs":87427}
+HYPERFRAMES_CAPTURE_PHASE {"schema":"hyperframes.capture.phase.v1","phase":"contact-sheets","status":"completed","remainingMs":85814}
+HYPERFRAMES_CAPTURE_PHASE {"schema":"hyperframes.capture.phase.v1","phase":"scaffold","status":"started","remainingMs":85813}
+HYPERFRAMES_CAPTURE_PHASE {"schema":"hyperframes.capture.phase.v1","phase":"scaffold","status":"completed","remainingMs":85809}
+HYPERFRAMES_CAPTURE_PHASE {"schema":"hyperframes.capture.phase.v1","phase":"complete","status":"completed","remainingMs":85809}
+{
+  "ok": true,
+  "projectDir": "/home/user/danipro/videos/before-i-do-couples/capture",
+  "url": "https://www.beforeido.co.il/",
+  "httpStatus": 200,
+  "title": "Before I Do משחק קלפים לזוגות מאורסים",
+  "screenshots": 15,
+  "assets": 17,
+  "dropped": {
+    "size-floor": 0,
+    "budget-exhausted": 0,
+    "cap-reached": 0,
+    "unavailable": 0
+  },
+  "detectedSections": 11,
+  "fonts": [
+    "Assistant",
+    "Caveat",
+    "Heebo",
+    "Times New Roman"
+  ],
+  "fontsDetailed": [
+    {
+      "family": "Assistant",
+      "weights": [
+        300,
+        400,
+        600,
+        700
+      ],
+      "variable": false
+    },
+    {
+      "family": "Caveat",
+      "weights": [
+        400,
+        500,
+        600
+      ],
+      "variable": false
+    },
+    {
+      "family": "Heebo",
+      "weights": [
+        300,
+        400,
+        500,
+        600,
+        700,
+        800
+      ],
+      "variable": false
+    },
+    {
+      "family": "Times New Roman",
+      "weights": [
+        400
+      ],
+      "variable": false
+    }
+  ],
+  "animations": {
+    "webAnimations": 2,
+    "cssDeclarations": 44,
+    "scrollTargets": 0,
+    "cdpAnimations": 28,
+    "canvases": 0
+  },
+  "warnings": [],
+  "lastPhase": {
+    "schema": "hyperframes.capture.phase.v1",
+    "phase": "complete",
+    "status": "completed",
+    "remainingMs": 85809
+  }
+}

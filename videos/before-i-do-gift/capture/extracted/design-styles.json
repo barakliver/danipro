@@ -1,0 +1,293 @@
+{
+  "typography": [
+    {
+      "role": "heading",
+      "fontFamily": "Heebo",
+      "fontSize": "64px",
+      "fontWeight": "700",
+      "lineHeight": "67.2px",
+      "letterSpacing": "-1px",
+      "color": "#4F6BA5",
+      "sampleText": "איפה אתם בתוךכל הסיפור הזה?"
+    },
+    {
+      "role": "display",
+      "fontFamily": "Heebo",
+      "fontSize": "46px",
+      "fontWeight": "700",
+      "lineHeight": "59.8px",
+      "letterSpacing": "normal",
+      "color": "#FFFFFF",
+      "sampleText": "רגע לפני שהחתונה הופכת לרשימת משימות,בואו נדבר על החתונה שאת"
+    },
+    {
+      "role": "heading-2",
+      "fontFamily": "Heebo",
+      "fontSize": "42px",
+      "fontWeight": "600",
+      "lineHeight": "54.6px",
+      "letterSpacing": "normal",
+      "color": "#4F6BA5",
+      "sampleText": "יש החלטות שמקבלים מול ספקים.ויש החלטות שכדאי לקבל ביניכם."
+    },
+    {
+      "role": "heading-2",
+      "fontFamily": "Heebo",
+      "fontSize": "40px",
+      "fontWeight": "700",
+      "lineHeight": "48px",
+      "letterSpacing": "-0.5px",
+      "color": "#2F3F63",
+      "sampleText": "משחק החתונות היחידשנוצר על ידי מפיק חתונות."
+    },
+    {
+      "role": "heading-2",
+      "fontFamily": "Heebo",
+      "fontSize": "38px",
+      "fontWeight": "600",
+      "lineHeight": "51.3px",
+      "letterSpacing": "normal",
+      "color": "#FFFFFF",
+      "sampleText": "קופסה אחת, שבעים שאלות, וערב אחד בשבילכם."
+    },
+    {
+      "role": "body",
+      "fontFamily": "Caveat",
+      "fontSize": "26px",
+      "fontWeight": "500",
+      "lineHeight": "26px",
+      "letterSpacing": "normal",
+      "color": "#4F6BA5",
+      "sampleText": "Before I Do"
+    },
+    {
+      "role": "heading-3",
+      "fontFamily": "Heebo",
+      "fontSize": "23px",
+      "fontWeight": "700",
+      "lineHeight": "29.9px",
+      "letterSpacing": "normal",
+      "color": "#FFFFFF",
+      "sampleText": "פותחים את הקופסה"
+    },
+    {
+      "role": "heading-3",
+      "fontFamily": "Heebo",
+      "fontSize": "22px",
+      "fontWeight": "700",
+      "lineHeight": "28.6px",
+      "letterSpacing": "normal",
+      "color": "#2F3F63",
+      "sampleText": "הרגע התארסנו"
+    },
+    {
+      "role": "link",
+      "fontFamily": "Assistant",
+      "fontSize": "18px",
+      "fontWeight": "600",
+      "lineHeight": "18px",
+      "letterSpacing": "normal",
+      "color": "#EF453D",
+      "sampleText": "יאללה, תראו לנו קלף←"
+    }
+  ],
+  "spacing": {
+    "observed": [
+      1,
+      2,
+      6,
+      8,
+      10,
+      11,
+      12,
+      14,
+      15,
+      16,
+      18,
+      19,
+      20,
+      22,
+      24
+    ],
+    "baseUnit": 4
+  },
+  "radius": [
+    "8px",
+    "12px",
+    "999px"
+  ],
+  "shadows": [
+    {
+      "value": "rgba(31, 44, 74, 0.3) 0px 10px 26px 0px",
+      "count": 3
+    },
+    {
+      "value": "rgba(31, 44, 74, 0.16) 0px 18px 38px 0px",
+      "count": 1
+    },
+    {
+      "value": "rgba(20, 31, 58, 0.18) 0px -12px 34px 0px",
+      "count": 1
+    },
+    {
+      "value": "rgba(31, 44, 74, 0.28) 0px 6px 20px 0px, rgba(37, 211, 102, 0.45) 0px 0px 0px 0px",
+      "count": 1
+    }
+  ],
+  "buttons": [
+    {
+      "label": "לזוג",
+      "background": "#4F6BA5",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#FFFFFF",
+      "padding": "0px 18px",
+      "borderRadius": "0px",
+      "border": "0px none rgb(255, 255, 255)",
+      "boxShadow": "none",
+      "fontSize": "15px",
+      "fontWeight": "600",
+      "height": "44px"
+    },
+    {
+      "label": "למתנה",
+      "background": "#FFFFFF",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#4F6BA5",
+      "padding": "0px 18px",
+      "borderRadius": "0px",
+      "border": "0px none rgb(79, 107, 165)",
+      "boxShadow": "none",
+      "fontSize": "15px",
+      "fontWeight": "600",
+      "height": "44px"
+    },
+    {
+      "label": "העדפות עוגיות",
+      "background": "transparent",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#FFFFFF",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "0px none rgba(255, 255, 255, 0.62)",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "400",
+      "height": "36px"
+    },
+    {
+      "label": "אישור הכל",
+      "background": "#FFFFFF",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#4F6BA5",
+      "padding": "0px 22px",
+      "borderRadius": "8px",
+      "border": "1px solid rgb(79, 107, 165)",
+      "boxShadow": "none",
+      "fontSize": "15px",
+      "fontWeight": "600",
+      "height": "44px"
+    },
+    {
+      "label": "להזמנה",
+      "background": "#FFFFFF",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#FFFFFF",
+      "padding": "0px 14px",
+      "borderRadius": "999px",
+      "border": "0px none rgb(255, 255, 255)",
+      "boxShadow": "none",
+      "fontSize": "12.5px",
+      "fontWeight": "500",
+      "height": "44px"
+    }
+  ],
+  "cards": [
+    {
+      "label": "card",
+      "background": "transparent",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#000000",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "0px none rgb(0, 0, 0)",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "640.25px"
+    },
+    {
+      "label": "card",
+      "background": "#FFFFFF",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#000000",
+      "padding": "34px 26px",
+      "borderRadius": "14px",
+      "border": "0px none rgb(0, 0, 0)",
+      "boxShadow": "rgba(31, 44, 74, 0.16) 0px 18px 38px 0px",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "352px"
+    }
+  ],
+  "nav": {
+    "label": "navigation",
+    "background": "transparent",
+    "backgroundImage": "",
+    "backdropFilter": "",
+    "color": "#000000",
+    "padding": "0px",
+    "borderRadius": "0px",
+    "border": "0px none rgb(0, 0, 0)",
+    "boxShadow": "none",
+    "fontSize": "16px",
+    "fontWeight": "400",
+    "height": "44px"
+  },
+  "chips": [
+    {
+      "label": "הבעיה",
+      "background": "#E7EDF8",
+      "color": "#4F6BA5",
+      "padding": "9px 16px",
+      "borderRadius": "999px",
+      "border": "0px none rgb(79, 107, 165)",
+      "boxShadow": "none",
+      "fontSize": "13px",
+      "fontWeight": "600",
+      "height": "13px"
+    },
+    {
+      "label": "להזמנה",
+      "background": "#FFFFFF",
+      "color": "#FFFFFF",
+      "padding": "0px 14px",
+      "borderRadius": "999px",
+      "border": "0px none rgb(255, 255, 255)",
+      "boxShadow": "none",
+      "fontSize": "12.5px",
+      "fontWeight": "500",
+      "height": "44px"
+    }
+  ],
+  "statCells": [
+    {
+      "background": "transparent",
+      "borderRadius": "0px",
+      "border": "0px none rgb(0, 0, 0)",
+      "boxShadow": "none",
+      "numberFontSize": "44px",
+      "numberFontWeight": "800",
+      "numberColor": "#4F6BA5"
+    }
+  ],
+  "tabs": [],
+  "backgrounds": [],
+  "glass": []
+}

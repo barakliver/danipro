@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "preferences": {
+    "destination": {
+      "value": "instagram-reels",
+      "confirmed_in": [
+        "before-i-do-gift"
+      ],
+      "updated_at": "2026-10-04T21:26:23.806Z"
+    },
+    "aspect": {
+      "value": "1080x1920",
+      "confirmed_in": [
+        "before-i-do-gift"
+      ],
+      "updated_at": "2026-10-04T21:26:23.871Z"
+    },
+    "language": {
+      "value": "he",
+      "confirmed_in": [
+        "before-i-do-gift"
+      ],
+      "updated_at": "2026-10-04T21:26:23.931Z"
+    },
+    "flow": {
+      "value": "automation",
+      "confirmed_in": [
+        "before-i-do-gift"
+      ],
+      "updated_at": "2026-10-04T21:26:23.990Z"
+    },
+    "storyboard": {
+      "value": "yes",
+      "confirmed_in": [
+        "before-i-do-gift"
+      ],
+      "updated_at": "2026-10-04T21:26:24.066Z"
+    },
+    "style_preset.product-launch-video": {
+      "value": "blue-professional",
+      "confirmed_in": [
+        "before-i-do-gift"
+      ],
+      "updated_at": "2026-10-04T21:26:24.135Z"
+    }
+  },
+  "sightings": {}
+}

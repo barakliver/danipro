@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "preferences": {
+    "destination": {
+      "value": "instagram-reels",
+      "confirmed_in": [
+        "before-i-do-couples"
+      ],
+      "updated_at": "2026-10-04T21:23:00.040Z"
+    },
+    "aspect": {
+      "value": "1080x1920",
+      "confirmed_in": [
+        "before-i-do-couples"
+      ],
+      "updated_at": "2026-10-04T21:23:00.104Z"
+    },
+    "language": {
+      "value": "he",
+      "confirmed_in": [
+        "before-i-do-couples"
+      ],
+      "updated_at": "2026-10-04T21:23:00.187Z"
+    },
+    "flow": {
+      "value": "automation",
+      "confirmed_in": [
+        "before-i-do-couples"
+      ],
+      "updated_at": "2026-10-04T21:23:00.257Z"
+    },
+    "storyboard": {
+      "value": "yes",
+      "confirmed_in": [
+        "before-i-do-couples"
+      ],
+      "updated_at": "2026-10-04T21:23:00.329Z"
+    },
+    "style_preset.product-launch-video": {
+      "value": "blue-professional",
+      "confirmed_in": [
+        "before-i-do-couples"
+      ],
+      "updated_at": "2026-10-04T21:24:43.693Z"
+    }
+  },
+  "sightings": {}
+}

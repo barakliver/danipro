@@ -1,0 +1,119 @@
+{
+  "summary": {
+    "webAnimations": 2,
+    "cssDeclarations": 44,
+    "scrollTargets": 0,
+    "cdpAnimations": 28,
+    "canvases": 0
+  },
+  "namedAnimations": [
+    "bid-wa-breathe"
+  ],
+  "scrollTriggeredElements": 0,
+  "representativeAnimations": [
+    {
+      "type": "CSSTransition",
+      "playState": "running",
+      "animationName": null,
+      "targetSelector": "#wa-share.bid-float",
+      "targetRect": {
+        "x": 26,
+        "y": 827.453125,
+        "width": 173,
+        "height": 48,
+        "top": 827.453125,
+        "right": 199,
+        "bottom": 875.453125,
+        "left": 26
+      },
+      "keyframes": [
+        {
+          "offset": 0,
+          "easing": "linear",
+          "composite": "auto",
+          "bottom": "204.547px",
+          "computedOffset": 0
+        },
+        {
+          "offset": 1,
+          "easing": "linear",
+          "composite": "auto",
+          "bottom": "144.5px",
+          "computedOffset": 1
+        }
+      ],
+      "timing": {
+        "duration": 260,
+        "delay": 0,
+        "iterations": 1,
+        "easing": "cubic-bezier(0.2, 0.7, 0.2, 1)",
+        "direction": "normal"
+      }
+    },
+    {
+      "type": "CSSAnimation",
+      "playState": "running",
+      "animationName": "bid-wa-breathe",
+      "targetSelector": "#wa-share.bid-float",
+      "targetRect": {
+        "x": 26,
+        "y": 827.453125,
+        "width": 173,
+        "height": 48,
+        "top": 827.453125,
+        "right": 199,
+        "bottom": 875.453125,
+        "left": 26
+      },
+      "keyframes": [
+        {
+          "offset": 0,
+          "easing": "ease-in-out",
+          "composite": "auto",
+          "transform": "scale(1)",
+          "boxShadow": "rgba(31, 44, 74, 0.28) 0px 6px 20px 0px, rgba(37, 211, 102, 0.45) 0px 0px 0px 0px",
+          "computedOffset": 0
+        },
+        {
+          "offset": 0.88,
+          "easing": "ease-in-out",
+          "composite": "auto",
+          "transform": "scale(1)",
+          "boxShadow": "rgba(31, 44, 74, 0.28) 0px 6px 20px 0px, rgba(37, 211, 102, 0.45) 0px 0px 0px 0px",
+          "computedOffset": 0.88
+        },
+        {
+          "offset": 0.92,
+          "easing": "ease-in-out",
+          "composite": "auto",
+          "transform": "scale(1.045)",
+          "boxShadow": "rgba(31, 44, 74, 0.32) 0px 8px 24px 0px, rgba(37, 211, 102, 0) 0px 0px 0px 10px",
+          "computedOffset": 0.92
+        },
+        {
+          "offset": 0.96,
+          "easing": "ease-in-out",
+          "composite": "auto",
+          "transform": "scale(1)",
+          "boxShadow": "rgba(31, 44, 74, 0.28) 0px 6px 20px 0px, rgba(37, 211, 102, 0) 0px 0px 0px 16px",
+          "computedOffset": 0.96
+        },
+        {
+          "offset": 1,
+          "easing": "ease-in-out",
+          "composite": "auto",
+          "transform": "scale(1)",
+          "boxShadow": "rgba(31, 44, 74, 0.28) 0px 6px 20px 0px, rgba(37, 211, 102, 0.45) 0px 0px 0px 0px",
+          "computedOffset": 1
+        }
+      ],
+      "timing": {
+        "duration": 6000,
+        "delay": 3000,
+        "iterations": null,
+        "easing": "linear",
+        "direction": "normal"
+      }
+    }
+  ]
+}
