@@ -6,17 +6,27 @@ arc: Ticker-takeover hook → reframe → proof (the funny cards) → the gifter
 audience: חברים ומשפחה של זוגות מאורסים
 mode: collaborative
 language: he
-music: playful upbeat pizzicato, light comedic bounce, low under voice
+music: none
 narration: user-recorded
 ---
 
+## Decisions
+
+- **Spine:** the blue Before I Do box — seen in the real footage, opened mid-film, closed again at the end (callback).
+- **Direction rule:** motion travels right → left (Hebrew reading direction).
+- **Captions:** fixed band at 62%–70% of the frame height, white on a soft ink pill; none on the final frame (on-screen text already says the line). Key content sits above the band.
+- **Instagram safe zones:** keep text out of the top ~10% (header), the bottom ~22% (caption/username), and the right ~10% from mid-height down (action buttons).
+- **Held frame:** the final frame — nothing moves but a slow push-in; the line lands.
+- **Bans:** no glow, no heavy shadows, no fake product UI, no slideshow (each beat a fresh card), no screensaver motion, no emoji glyphs (SVG icons only).
+- **Music:** none in the file — the user adds a track from Instagram's library at upload.
+
 ## Frame 1 — עוד סט מצעים?
 
-- scene: "החברים התארסו 💍" title, then cliché gift options cycle fast in one swapping slot — "סט מצעים?" / "מסגרת עם השמות?" / "מגבות עם רקמה?" — each struck through in heart red
+- scene: "החברים התארסו" title with a small red heart, then cliché gift options cycle fast in one swapping slot — "סט מצעים?" / "מסגרת עם השמות?" / "מגבות עם רקמה?" — each struck through in heart red
 - voiceover: "החברים התארסו. מגיעה להם מתנה. אז... עוד סט מצעים? מסגרת עם השמות?"
 - duration: 5s
 - transition_in: cut
-- status: outline
+- status: built
 - src: compositions/frames/01-hook.html
 - type: hook
 - persuasion: Negative contrast — the cliché gifts everyone already bought
@@ -33,7 +43,7 @@ keyMessage: מתנה בנאלית? לא במשמרת שלכם.
 - voiceover: "עם כל הכבוד למצעים — זו המתנה היחידה שהם אשכרה צריכים עכשיו."
 - duration: 4.5s
 - transition_in: zoom-through
-- status: outline
+- status: built
 - src: compositions/frames/02-reveal.html
 - type: product_intro
 - persuasion: Reframe — from "nice object" to "what they need right now"
@@ -50,7 +60,7 @@ keyMessage: Before I Do = המתנה שבאמת צריך.
 - voiceover: "להביא את הכלב לחתונה, או להשאיר אותו בבית? שבעים שאלות כאלה — שעדיף שיעלו עכשיו בסלון, ולא מול הספק."
 - duration: 6s
 - transition_in: crossfade
-- status: outline
+- status: built
 - src: compositions/frames/03-cards.html
 - type: feature_showcase
 - persuasion: Show-don't-tell proof with a laugh (the real funny card)
@@ -67,7 +77,7 @@ keyMessage: 70 שאלות, שכדאי שיעלו עכשיו.
 - voiceover: "והבונוס שלכם? פחות הודעות קוליות על סידורי הושבה."
 - duration: 4s
 - transition_in: push-slide LEFT
-- status: outline
+- status: built
 - src: compositions/frames/04-bonus.html
 - type: benefit_highlight
 - persuasion: Self-interest twist — the gift helps the giver too
@@ -83,7 +93,7 @@ keyMessage: זה נחמד גם בשבילכם.
 - voiceover: "Before I Do. מגיע ארוז, ומוכן למסירה."
 - duration: 3.5s
 - transition_in: crossfade
-- status: outline
+- status: built
 - src: compositions/frames/05-cta.html
 - type: cta
 - persuasion: Friction reduction (gift-ready) + wink

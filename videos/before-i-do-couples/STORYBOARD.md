@@ -6,9 +6,19 @@ arc: PAS — hook → pain → product intro → how it plays → brand/CTA
 audience: זוגות מאורסים טריים
 mode: collaborative
 language: he
-music: warm gentle acoustic, intimate, light and hopeful, low under voice
+music: none
 narration: user-recorded
 ---
+
+## Decisions
+
+- **Spine:** the blue Before I Do box — seen in the real footage, opened mid-film, closed again at the end (callback).
+- **Direction rule:** motion travels right → left (Hebrew reading direction).
+- **Captions:** fixed band at 62%–70% of the frame height, white on a soft ink pill; none on the final frame (on-screen text already says the line). Key content sits above the band.
+- **Instagram safe zones:** keep text out of the top ~10% (header), the bottom ~22% (caption/username), and the right ~10% from mid-height down (action buttons).
+- **Held frame:** the final frame — nothing moves but a slow push-in; the line lands.
+- **Bans:** no glow, no heavy shadows, no fake product UI, no slideshow (each beat a fresh card), no screensaver motion, no emoji glyphs (SVG icons only).
+- **Music:** none in the file — the user adds a track from Instagram's library at upload.
 
 ## Frame 1 — לא רבים, פשוט לא דיברו
 
@@ -16,7 +26,7 @@ narration: user-recorded
 - voiceover: "רוב הזוגות לא רבים על החתונה. הם פשוט... אף פעם לא דיברו עליה."
 - duration: 4.5s
 - transition_in: cut
-- status: outline
+- status: built
 - src: compositions/frames/01-hook.html
 - type: hook
 - persuasion: Pattern interrupt — reframing the expected conflict
@@ -33,7 +43,7 @@ keyMessage: הבעיה היא לא מריבות — היא שיחה שלא קר�
 - voiceover: "כמה אורחים? מי מהעבודה? איפה ההורים נכנסים? ופתאום, כל החלטה הופכת למשא ומתן."
 - duration: 5.5s
 - transition_in: zoom-through
-- status: outline
+- status: built
 - src: compositions/frames/02-pain.html
 - type: pain_point
 - persuasion: Pain agitation (the questions from the site's "הבעיה" section)
@@ -50,7 +60,7 @@ keyMessage: בלי שיחה מוקדמת, כל החלטה הופכת למשא ו
 - voiceover: "Before I Do. משחק קלפים לזוגות מאורסים — שבעים שאלות שחובה לשאול לפני החתונה."
 - duration: 5s
 - transition_in: blur-crossfade
-- status: outline
+- status: built
 - src: compositions/frames/03-product.html
 - type: product_intro
 - persuasion: Show-don't-tell proof (real product, real hands)
@@ -67,7 +77,7 @@ keyMessage: 70 שאלות, בקופסה אחת.
 - voiceover: "פותחים בקבוק, שולפים קלף, ומדברים. על מה חשוב לכם, ועל מה אתם לא מוותרים."
 - duration: 5.5s
 - transition_in: crossfade
-- status: outline
+- status: built
 - src: compositions/frames/04-play.html
 - type: feature_showcase
 - persuasion: Friction reduction (three simple steps) + Feature-to-benefit translation
@@ -84,7 +94,7 @@ keyMessage: ערב אחד של שיחה אמיתית, בלי שיפוטיות.
 - voiceover: "שיחה אחת, לפני כל השאר. Before I Do."
 - duration: 4s
 - transition_in: crossfade
-- status: outline
+- status: built
 - src: compositions/frames/05-cta.html
 - type: cta
 - persuasion: Brand promise close (the site's hero line)
