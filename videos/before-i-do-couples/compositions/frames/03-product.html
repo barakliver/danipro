@@ -375,14 +375,17 @@
     overflow: hidden;
     pointer-events: none;
   }
+  /* Full-frame window; the yield shrinks it with a transform scale (never top/left),
+     so the inset reads 32px on every side once it lands. */
   .\30 3-product-hole {
     position: absolute;
-    top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
+    top: 0;
+    width: 1080px;
+    height: 1920px;
     border-radius: 0;
     overflow: hidden;
+    transform-origin: 50% 50%;
     box-shadow: 0 0 0 1400px #f1f4f9; /* solid spread = the mat surround (not a drop shadow) */
   }
   .\30 3-product-shade {
@@ -505,26 +508,26 @@
   data-height="1920"
 >
   <!-- track 0: the yield mat (+ deep-ink top shade, clipped inside the window) -->
-  <div class="clip 03-product-matlayer" data-start="0" data-duration="5" data-track-index="0">
-    <div class="03-product-hole" id="03-product-hole">
+  <div id="f03-product-mat" class="clip 03-product-matlayer" data-start="0" data-duration="5" data-track-index="0">
+    <div class="03-product-hole" id="f03-product-hole">
       <div class="03-product-shade"></div>
-      <div class="03-product-rim" id="03-product-rim"></div>
+      <div class="03-product-rim" id="f03-product-rim"></div>
     </div>
   </div>
 
   <!-- track 1: wordmark, subline, stat card -->
-  <div class="clip 03-product-ui" data-start="0" data-duration="5" data-track-index="1">
+  <div id="f03-product-ui" class="clip 03-product-ui" data-start="0" data-duration="5" data-track-index="1">
     <div class="03-product-head">
       <div class="03-product-wmrow" dir="ltr" lang="en">
-        <span class="03-product-wm" id="03-product-wm">Before I Do</span>
-        <svg class="03-product-heart" id="03-product-heart" viewBox="0 0 24 22" aria-hidden="true">
+        <span class="03-product-wm" id="f03-product-wm">Before I Do</span>
+        <svg class="03-product-heart" id="f03-product-heart" viewBox="0 0 24 22" aria-hidden="true">
           <path
             d="M12 21.6 10.3 20C4.2 14.5.2 10.9.2 6.5.2 2.9 3 .1 6.6.1c2 0 4 .9 5.4 2.4C13.4 1 15.4.1 17.4.1 21 .1 23.8 2.9 23.8 6.5c0 4.4-4 8-10.1 13.5L12 21.6Z"
             fill="#EF453D"
           />
         </svg>
       </div>
-      <div class="03-product-sub" id="03-product-sub" dir="rtl" lang="he">
+      <div class="03-product-sub" id="f03-product-sub" dir="rtl" lang="he">
         <span class="03-product-word">משחק</span>
         <span class="03-product-word">קלפים</span>
         <span class="03-product-word">לזוגות</span>
@@ -532,9 +535,9 @@
       </div>
     </div>
 
-    <div class="03-product-card" id="03-product-card" dir="rtl" lang="he">
-      <span class="03-product-num" id="03-product-num">0</span>
-      <div class="03-product-label" id="03-product-label">
+    <div class="03-product-card" id="f03-product-card" dir="rtl" lang="he">
+      <span class="03-product-num" id="f03-product-num">0</span>
+      <div class="03-product-label" id="f03-product-label">
         <span class="03-product-line">שאלות שחובה לשאול</span>
         <span class="03-product-line">לפני החתונה</span>
       </div>
@@ -554,16 +557,16 @@
     };
 
     const $ = (id) => document.getElementById(id);
-    const hole = $("03-product-hole");
-    const rim = $("03-product-rim");
-    const wm = $("03-product-wm");
-    const heart = $("03-product-heart");
-    const sub = $("03-product-sub");
+    const hole = $("f03-product-hole");
+    const rim = $("f03-product-rim");
+    const wm = $("f03-product-wm");
+    const heart = $("f03-product-heart");
+    const sub = $("f03-product-sub");
     const words = Array.prototype.slice.call(sub.getElementsByClassName("03-product-word"));
-    const card = $("03-product-card");
-    const num = $("03-product-num");
+    const card = $("f03-product-card");
+    const num = $("f03-product-num");
     const lines = Array.prototype.slice.call(
-      $("03-product-label").getElementsByClassName("03-product-line"),
+      $("f03-product-label").getElementsByClassName("03-product-line"),
     );
 
     const tl = gsap.timeline({ paused: true });
@@ -600,14 +603,28 @@
 
     // Scene 3 — YIELD: the footage recedes into a rounded card (mat closes in) in one event
     // with the white stat card rising into the space it hands over.
+    // Window inset 0 → 32px on every side via transform scale; the radius is authored in the
+    // window's local (pre-scale) space so it lands as a round 28px on screen.
+    const INSET = 32;
+    const RADIUS = 28;
+    const SX = (1080 - 2 * INSET) / 1080;
+    const SY = (1920 - 2 * INSET) / 1920;
+    const rx = (RADIUS / SX).toFixed(2);
+    const ry = (RADIUS / SY).toFixed(2);
     tl.fromTo(
       hole,
-      { top: 0, left: 0, right: 0, bottom: 0, borderRadius: 0 },
-      { top: 32, left: 32, right: 32, bottom: 32, borderRadius: 28, duration: 1.0, ease: "expo.out" },
+      { scaleX: 1, scaleY: 1, borderRadius: "0px / 0px" },
+      {
+        scaleX: SX,
+        scaleY: SY,
+        borderRadius: rx + "px / " + ry + "px",
+        duration: 1.0,
+        ease: "expo.out",
+      },
       CUES.shivim,
     );
     tl.fromTo(rim, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.out" }, CUES.shivim + 0.15);
-    tl.fromTo(card, { y: 110 }, { y: 0, duration: 0.85, ease: "power3.out" }, CUES.shivim + 0.05);
+    tl.fromTo(card, { y: 90 }, { y: 0, duration: 0.85, ease: "power3.out" }, CUES.shivim + 0.05);
     tl.fromTo(card, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power1.out" }, CUES.shivim + 0.05);
 
     // "70" counts up 0→70 while its scale grows to final size (counting-dynamic-scale).

@@ -1,4 +1,5 @@
 <template>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
 <style>
 @font-face{
   font-family: 'Assistant';
@@ -353,249 +354,297 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 </style>
-<style>
-  #root {
-    position: absolute;
-    inset: 0;
-    width: 1080px;
-    height: 1920px;
-    overflow: hidden;
-    font-family: 'Assistant', sans-serif;
-    color: #1F2C4A;
-  }
-  /* full-bleed white ground — a dedicated clip layer, never on #root */
-  [class~="04-bonus-ground"] {
-    position: absolute;
-    inset: 0;
-    background: #FFFFFF;
-  }
-  /* slow macro push underneath the whole build */
-  [class~="04-bonus-cam"] {
-    position: absolute;
-    inset: 0;
-    transform-origin: 540px 640px;
-  }
-  /* "והבונוס שלכם?" — heart-red pill, right-anchored (RTL start) */
-  [class~="04-bonus-pill"] {
-    position: absolute;
-    top: 140px;
-    right: 59.4px;
-    display: inline-block;
-    background: #EF453D;
-    color: #FFFFFF;
-    border-radius: 100px;
-    padding: 17.3px 45.4px;
-    font-size: 64.8px;
-    font-weight: 600;
-    line-height: 1.15;
-    white-space: nowrap;
-  }
-  /* voice-note stack — sketch offsets, right-aligned (flex-start in RTL) */
-  [class~="04-bonus-stack"] {
-    position: absolute;
-    top: 318px;
-    left: 59.4px;
-    right: 59.4px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 32.4px;
-    transform-origin: 100% 0%;
-  }
-  [class~="04-bonus-bubble"] {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    background: #DDE7F5;
-    color: #1F2C4A;
-    border-radius: 43.2px 43.2px 43.2px 10.8px;
-    padding: 32.4px 43.2px;
-    font-size: 54px;
-    font-weight: 600;
-    line-height: 1.15;
-    white-space: nowrap;
-    transform-origin: 100% 100%;
-  }
-  [class~="04-bonus-bubble-2"] { margin-right: 64.8px; }
-  [class~="04-bonus-mic"] {
-    width: 54px;
-    height: 54px;
-    flex: 0 0 auto;
-    display: block;
-  }
-  [class~="04-bonus-wave"] {
-    width: 61px;
-    height: 40px;
-    flex: 0 0 auto;
-    display: block;
-  }
-  [class~="04-bonus-wave"] rect { fill: #4F6BA5; }
-  /* the heart-red strike that crosses out the whole stack */
-  [class~="04-bonus-strike"] {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 961.2px;
-    height: 446px;
-    overflow: visible;
-    pointer-events: none;
-  }
-  /* headline — ink-deep 700, ~104px, per-word reveal */
-  [class~="04-bonus-head"] {
-    position: absolute;
-    top: 790px;
-    left: 59.4px;
-    right: 59.4px;
-    font-size: 103.7px;
-    font-weight: 700;
-    line-height: 1.05;
-    letter-spacing: -0.02em;
-    color: #1F2C4A;
-    text-align: right;
-  }
-  [class~="04-bonus-line"] { display: block; white-space: nowrap; }
-  [class~="04-bonus-w"] {
-    display: inline-block;
-    position: relative;
-  }
-  [class~="04-bonus-ul"] {
-    display: inline-block;
-    position: relative;
-  }
-  [class~="04-bonus-ulbar"] {
-    position: absolute;
-    left: -1%;
-    right: -1%;
-    top: 78%;
-    height: 14%;
-    background: #EF453D;
-    border-radius: 6px;
-    transform-origin: 100% 50%;
-  }
-</style>
+  <style>
+    /* 02-pain — the first-meeting questions. Root styled via #root only; every
+       authored class is prefixed "02-pain-" (selected as [class~="02-pain-…"] since the prefix starts with a digit). */
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 1080px;
+      height: 1920px;
+      overflow: hidden;
+      font-family: 'Assistant';
+      color: #1F2C4A;
+    }
+    [class~="02-pain-ground"] {
+      position: absolute;
+      inset: 0;
+      background: #FFFFFF;
+    }
+    [class~="02-pain-stage"] {
+      position: absolute;
+      inset: 0;
+      transform-origin: 1020px 300px;
+    }
+    [class~="02-pain-cluster"] {
+      position: absolute;
+      inset: 0;
+      transform-origin: 660px 425px;
+    }
+    /* Question rows — anchors measured from the confirmed sketch (1cqw = 10.8px). */
+    [class~="02-pain-q"] {
+      position: absolute;
+    }
+    [class~="02-pain-jit"] {
+      display: block;
+    }
+    [class~="02-pain-pill"] {
+      display: block;
+      white-space: nowrap;
+      background: #DDE7F5;
+      color: #4F6BA5;
+      font-family: 'Assistant';
+      font-weight: 600;
+      font-size: 71.28px;
+      line-height: 1.304;
+      padding: 17.28px 45.36px;
+      border-radius: 100px;
+      transform-origin: 92% 60%;
+    }
+    /* "Their words" — two partner answers tacked under each end of the pill. */
+    [class~="02-pain-slot"] {
+      position: absolute;
+      bottom: -28px;
+      z-index: 2;
+    }
+    [class~="02-pain-slot-l"] {
+      left: -14px;
+    }
+    [class~="02-pain-slot-r"] {
+      right: -14px;
+    }
+    [class~="02-pain-chip"] {
+      display: block;
+      white-space: nowrap;
+      background: #FFFFFF;
+      font-family: 'Assistant';
+      font-weight: 700;
+      font-size: 34px;
+      line-height: 1.1;
+      padding: 5px 20px;
+      border: 3px solid currentColor;
+      border-radius: 100px;
+      transform-origin: 50% 50%;
+    }
+    [class~="02-pain-chip-blue"] {
+      color: #4F6BA5;
+    }
+    [class~="02-pain-chip-red"] {
+      color: #EF453D;
+    }
+    /* Headline — sketch .h1 at 9.6cqw, top 762.7px, right-aligned in the safe column. */
+    [class~="02-pain-head"] {
+      position: absolute;
+      top: 762.7px;
+      right: 59.4px;
+      width: 961.2px;
+      text-align: right;
+      font-family: 'Assistant';
+      font-weight: 700;
+      font-size: 103.68px;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: #1F2C4A;
+    }
+    [class~="02-pain-line"] {
+      display: block;
+      white-space: nowrap;
+    }
+    [class~="02-pain-word"] {
+      display: inline-block;
+      position: relative;
+      z-index: 1;
+      transform-origin: 50% 70%;
+    }
+    [class~="02-pain-ulwrap"] {
+      display: inline-block;
+      position: relative;
+    }
+    [class~="02-pain-ulbar"] {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -3px;
+      height: 19px;
+      background: #EF453D;
+      border-radius: 2px;
+      z-index: 0;
+      transform-origin: 100% 50%;
+    }
+  </style>
 
-<div id="root" data-composition-id="04-bonus" data-width="1080" data-height="1920">
-  <div id="04-bonus-ground" class="clip 04-bonus-ground" data-start="0" data-duration="4" data-track-index="0"></div>
+  <div id="root" data-composition-id="02-pain" data-start="0" data-duration="5.5" data-width="1080" data-height="1920">
+    <!-- Full-bleed white ground (no footage on this frame). -->
+    <div id="02-pain-ground" class="clip 02-pain-ground" data-start="0" data-duration="5.5" data-track-index="0"></div>
 
-  <div id="04-bonus-cam" class="04-bonus-cam">
-    <div id="04-bonus-pill" class="04-bonus-pill" dir="rtl" lang="he">והבונוס שלכם?</div>
-
-    <div id="04-bonus-stack" class="04-bonus-stack" dir="rtl" lang="he">
-      <div id="04-bonus-b1" class="04-bonus-bubble 04-bonus-bubble-1">
-        <svg class="04-bonus-mic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="2" width="8" height="13" rx="4" fill="currentColor"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
-        <svg class="04-bonus-wave" id="04-bonus-wave1" viewBox="0 0 61 40" aria-hidden="true" data-h="14,30,20,36,24,12"><rect x="0" width="6" rx="3"/><rect x="11" width="6" rx="3"/><rect x="22" width="6" rx="3"/><rect x="33" width="6" rx="3"/><rect x="44" width="6" rx="3"/><rect x="55" width="6" rx="3"/></svg>
-        <span>0:47 · סידורי הושבה</span>
-      </div>
-      <div id="04-bonus-b2" class="04-bonus-bubble 04-bonus-bubble-2">
-        <svg class="04-bonus-mic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="2" width="8" height="13" rx="4" fill="currentColor"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
-        <svg class="04-bonus-wave" id="04-bonus-wave2" viewBox="0 0 61 40" aria-hidden="true" data-h="20,34,16,28,38,18"><rect x="0" width="6" rx="3"/><rect x="11" width="6" rx="3"/><rect x="22" width="6" rx="3"/><rect x="33" width="6" rx="3"/><rect x="44" width="6" rx="3"/><rect x="55" width="6" rx="3"/></svg>
-        <span>1:32 · השולחן של הדודים</span>
-      </div>
-      <div id="04-bonus-b3" class="04-bonus-bubble 04-bonus-bubble-3">
-        <svg class="04-bonus-mic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="2" width="8" height="13" rx="4" fill="currentColor"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
-        <svg class="04-bonus-wave" id="04-bonus-wave3" viewBox="0 0 61 40" aria-hidden="true" data-h="10,24,36,18,30,16"><rect x="0" width="6" rx="3"/><rect x="11" width="6" rx="3"/><rect x="22" width="6" rx="3"/><rect x="33" width="6" rx="3"/><rect x="44" width="6" rx="3"/><rect x="55" width="6" rx="3"/></svg>
-        <span>2:05 · ובן הדוד מחו״ל?</span>
+    <div id="02-pain-stage" class="clip 02-pain-stage" data-start="0" data-duration="5.5" data-track-index="1">
+      <!-- The question cluster: accumulates, jitters, then jolts askew and dims. -->
+      <div id="02-pain-cluster" class="02-pain-cluster">
+        <div class="02-pain-q" style="top: 194.4px; right: 59.4px">
+          <div id="02-pain-j1" class="02-pain-jit"><div id="02-pain-q1" class="02-pain-pill" dir="rtl" lang="he">כמה אורחים?</div></div>
+          <div class="02-pain-slot 02-pain-slot-l"><div id="02-pain-j1l" class="02-pain-jit"><div id="02-pain-a1l" class="02-pain-chip 02-pain-chip-blue" dir="ltr">150</div></div></div>
+          <div class="02-pain-slot 02-pain-slot-r"><div id="02-pain-j1r" class="02-pain-jit"><div id="02-pain-a1r" class="02-pain-chip 02-pain-chip-red" dir="ltr">300</div></div></div>
+        </div>
+        <div class="02-pain-q" style="top: 360.8px; right: 156.6px">
+          <div id="02-pain-j2" class="02-pain-jit"><div id="02-pain-q2" class="02-pain-pill" dir="rtl" lang="he">מי מהעבודה?</div></div>
+          <div class="02-pain-slot 02-pain-slot-l"><div id="02-pain-j2l" class="02-pain-jit"><div id="02-pain-a2l" class="02-pain-chip 02-pain-chip-blue" dir="rtl" lang="he">כולם</div></div></div>
+          <div class="02-pain-slot 02-pain-slot-r"><div id="02-pain-j2r" class="02-pain-jit"><div id="02-pain-a2r" class="02-pain-chip 02-pain-chip-red" dir="rtl" lang="he">אף אחד</div></div></div>
+        </div>
+        <div class="02-pain-q" style="top: 527.2px; right: 91.8px">
+          <div id="02-pain-j3" class="02-pain-jit"><div id="02-pain-q3" class="02-pain-pill" dir="rtl" lang="he">איפה ההורים נכנסים?</div></div>
+        </div>
       </div>
 
-      <svg id="04-bonus-strike" class="04-bonus-strike" viewBox="0 0 961.2 446" aria-hidden="true">
-        <path id="04-bonus-strike-path" d="M 944 40 Q 560 196 116 404" pathLength="1" stroke-dasharray="1 2" stroke-dashoffset="1.05" fill="none" stroke="#EF453D" stroke-width="16" stroke-linecap="round"/>
-      </svg>
-    </div>
-
-    <div id="04-bonus-head" class="04-bonus-head" dir="rtl" lang="he">
-      <span class="04-bonus-line"><span id="04-bonus-w1" class="04-bonus-w">פחות</span> <span id="04-bonus-w2" class="04-bonus-w">הודעות</span> <span id="04-bonus-w3" class="04-bonus-w">קוליות</span></span>
-      <span class="04-bonus-line"><span id="04-bonus-w4" class="04-bonus-w">על</span> <span class="04-bonus-ul"><span id="04-bonus-ulbar" class="04-bonus-ulbar"></span><span id="04-bonus-w5" class="04-bonus-w">סידורי</span> <span id="04-bonus-w6" class="04-bonus-w">הושבה.</span></span></span>
+      <!-- The bold line: revealed word by word on the voice-over. -->
+      <div id="02-pain-head" class="02-pain-head" dir="rtl" lang="he">
+        <div class="02-pain-line"><span id="02-pain-w1" class="02-pain-word">ופתאום,</span></div>
+        <div class="02-pain-line"><span id="02-pain-w2" class="02-pain-word">כל</span> <span id="02-pain-w3" class="02-pain-word">החלטה</span> <span id="02-pain-w4" class="02-pain-word">היא</span></div>
+        <div class="02-pain-line"><span class="02-pain-ulwrap"><span id="02-pain-ulbar" class="02-pain-ulbar"></span><span id="02-pain-w5" class="02-pain-word">משא</span> <span id="02-pain-w6" class="02-pain-word">ומתן.</span></span></div>
+      </div>
     </div>
   </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
-<script>
-  (function () {
-    // Every timing lives here — re-time to the recorded VO by editing numbers only.
-    const CUES = {
-      bonus: 0.05,     // "והבונוס שלכם" — pill slides in
-      bubbles: 0.4,    // first voice-note bubble pops
-      bubbleGap: 0.15, // rapid-fire spacing between bubbles
-      pachot: 1.1,     // "פחות" — stack compresses/dims, strike, headline line 1 begins
-      wordGap: 0.25,   // per-word spacing on line 1
-      al: 2.05,        // "על"
-      sidurei: 2.3,    // "סידורי הושבה" — completes the headline
-      underline: 2.7,  // red underline draws under "סידורי הושבה"
-      end: 4.0
-    };
+  <script>
+    (function () {
+      // Every timing lives here — re-time the frame to the recorded VO by editing numbers only.
+      const CUES = {
+        q1: 0.05, // "כמה אורחים"
+        a1: 0.55, // answers 150 / 300
+        q2: 1.0, // "מי מהעבודה"
+        a2: 1.45, // answers כולם / אף אחד
+        q3: 1.9, // "איפה ההורים"
+        jitter: 2.25, // nervous jitter starts (grows until ufitom)
+        ufitom: 3.3, // "ופתאום" — cluster jolts askew + dims
+        kolHachlata: 3.9, // "כל החלטה"
+        masaUmatan: 4.6, // "משא ומתן"
+        underline: 4.75, // red underline draws right→left
+        end: 5.5,
+      };
 
-    const $ = (id) => document.getElementById(id);
-    const tl = gsap.timeline({ paused: true });
+      const $ = (id) => document.getElementById(id);
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
 
-    // Macro push underneath the whole shot (linear, finite, full duration).
-    tl.fromTo($("04-bonus-cam"), { scale: 1 }, { scale: 1.02, duration: CUES.end, ease: "none" }, 0);
+      // Macro move underneath everything: a slow, gentle push.
+      tl.fromTo($("02-pain-stage"), { scale: 1 }, { scale: 1.02, duration: CUES.end, ease: "sine.inOut" }, 0);
 
-    // Scene 1 — heart-red pill slides in from the right edge.
-    tl.fromTo($("04-bonus-pill"),
-      { x: 640 },
-      { x: 0, duration: 0.6, ease: "expo.out" },
-      CUES.bonus);
-
-    // Scene 2 — voice-note bubbles pop in rapid-fire from their anchored corner,
-    // each waveform's bars growing in left -> right (finite).
-    ["04-bonus-b1", "04-bonus-b2", "04-bonus-b3"].forEach((id, i) => {
-      const at = CUES.bubbles + i * CUES.bubbleGap;
-      tl.fromTo($(id),
-        { scale: 0, opacity: 0, y: 24 },
-        { scale: 1, opacity: 1, y: 0, duration: 0.42, ease: "expo.out" },
-        at);
-
-      const wave = $("04-bonus-wave" + (i + 1));
-      const heights = wave.getAttribute("data-h").split(",").map(Number);
-      wave.querySelectorAll("rect").forEach((bar, j) => {
-        const h = heights[j];
-        tl.fromTo(bar,
-          { attr: { y: 17, height: 6 } },
-          { attr: { y: 20 - h / 2, height: h }, duration: 0.28, ease: "power3.out" },
-          at + 0.1 + j * 0.035);
+      // Scenes 1–3 — question pills accumulate (spring-pop-entrance: scale 0→1, smooth power3 settle, no overshoot).
+      const POP_DUR = 0.5;
+      const POP_RISE = 24;
+      [
+        ["02-pain-q1", CUES.q1],
+        ["02-pain-q2", CUES.q2],
+        ["02-pain-q3", CUES.q3],
+      ].forEach(([id, at]) => {
+        tl.fromTo(
+          $(id),
+          { scale: 0, opacity: 0, y: POP_RISE },
+          { scale: 1, opacity: 1, y: 0, duration: POP_DUR, ease: "power3.out" },
+          at,
+        );
       });
-    });
 
-    // Scene 3 — on "פחות": the stack compresses and dims, the third note fades
-    // to ~40%, and a heart-red strike sweeps right -> left across the stack.
-    tl.fromTo($("04-bonus-stack"),
-      { scale: 1 },
-      { scale: 0.9, duration: 0.45, ease: "power3.out" },
-      CUES.pachot);
-    tl.fromTo([$("04-bonus-b1"), $("04-bonus-b2")],
-      { opacity: 1 },
-      { opacity: 0.72, duration: 0.4, ease: "power2.out", immediateRender: false },
-      CUES.pachot);
-    tl.fromTo($("04-bonus-b3"),
-      { opacity: 1 },
-      { opacity: 0.4, duration: 0.4, ease: "power2.out", immediateRender: false },
-      CUES.pachot);
-    tl.fromTo($("04-bonus-strike-path"),
-      { attr: { "stroke-dashoffset": 1.05 } },
-      { attr: { "stroke-dashoffset": 0 }, duration: 0.4, ease: "power2.inOut" },
-      CUES.pachot + 0.08);
+      // "Their words" — two partners answer at once: chips slide in from opposite sides and settle askew.
+      const CHIP_TRAVEL = 110;
+      const CHIP_TILT = 5;
+      const PARTNER_LAG = 0.06;
+      const chip = (id, side, at, dur) =>
+        tl.fromTo(
+          $(id),
+          { x: side * CHIP_TRAVEL, opacity: 0, rotation: 0, scale: 0.9 },
+          { x: 0, opacity: 1, rotation: -side * CHIP_TILT, scale: 1, duration: dur, ease: "power3.out" },
+          at,
+        );
+      chip("02-pain-a1l", -1, CUES.a1, 0.45);
+      chip("02-pain-a1r", 1, CUES.a1 + PARTNER_LAG, 0.45);
+      chip("02-pain-a2l", -1, CUES.a2, 0.36); // a touch faster
+      chip("02-pain-a2r", 1, CUES.a2 + PARTNER_LAG * 0.7, 0.36);
 
-    // Headline line 1 — "פחות הודעות קוליות", per word on the VO.
-    const wordIn = (id, at) => tl.fromTo($(id),
-      { yPercent: 55, opacity: 0 },
-      { yPercent: 0, opacity: 1, duration: 0.45, ease: "power3.out" },
-      at);
-    wordIn("04-bonus-w1", CUES.pachot);
-    wordIn("04-bonus-w2", CUES.pachot + CUES.wordGap);
-    wordIn("04-bonus-w3", CUES.pachot + CUES.wordGap * 2);
+      // Scene 3 — finite nervous jitter that grows. Deterministic (seeded PRNG), settles to 0 by "ופתאום".
+      function mulberry32(seed) {
+        let a = seed >>> 0;
+        return function () {
+          a = (a + 0x6d2b79f5) >>> 0;
+          let t = a;
+          t = Math.imul(t ^ (t >>> 15), t | 1);
+          t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+      const JIT_IDS = ["02-pain-j1", "02-pain-j1l", "02-pain-j1r", "02-pain-j2", "02-pain-j2l", "02-pain-j2r", "02-pain-j3"];
+      const JIT_STEP = 0.06;
+      const JIT_AMP_START = 0.6;
+      const JIT_AMP_END = 6;
+      const jitSteps = Math.floor((CUES.ufitom - CUES.jitter) / JIT_STEP) - 1;
+      const jitSettleAt = CUES.jitter + jitSteps * JIT_STEP;
+      JIT_IDS.forEach((id, i) => {
+        const rnd = mulberry32(0x2f6b + i * 977);
+        const el = $(id);
+        for (let k = 0; k < jitSteps; k++) {
+          const p = jitSteps > 1 ? k / (jitSteps - 1) : 1;
+          const amp = JIT_AMP_START + (JIT_AMP_END - JIT_AMP_START) * p * p;
+          const dir = (k + i) % 2 === 0 ? 1 : -1;
+          tl.to(
+            el,
+            {
+              x: dir * amp * (0.55 + 0.45 * rnd()),
+              y: (rnd() * 2 - 1) * amp * 0.5,
+              rotation: -dir * amp * 0.16 * rnd(),
+              duration: JIT_STEP,
+              ease: "sine.inOut",
+            },
+            CUES.jitter + k * JIT_STEP,
+          );
+        }
+        tl.to(el, { x: 0, y: 0, rotation: 0, duration: CUES.ufitom - jitSettleAt, ease: "power2.out" }, jitSettleAt);
+      });
 
-    // Scene 4 — "על סידורי הושבה." completes the headline; underline draws R -> L.
-    wordIn("04-bonus-w4", CUES.al);
-    wordIn("04-bonus-w5", CUES.sidurei);
-    wordIn("04-bonus-w6", CUES.sidurei + 0.15);
-    tl.fromTo($("04-bonus-ulbar"),
-      { scaleX: 0 },
-      { scaleX: 1, duration: 0.5, ease: "power3.inOut" },
-      CUES.underline);
+      // Scene 4 — on "ופתאום" the whole cluster jolts once, tilts askew and dims (stays readable, pushed back).
+      const cluster = $("02-pain-cluster");
+      const JOLT = 0.09;
+      tl.fromTo(
+        cluster,
+        { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1 },
+        { x: -30, y: 6, rotation: 4.5, scale: 1, opacity: 0.85, duration: JOLT, ease: "power2.out", immediateRender: false },
+        CUES.ufitom,
+      );
+      tl.to(cluster, { x: -10, y: 10, rotation: 3, scale: 0.96, opacity: 0.45, duration: 0.7, ease: "power3.out" }, CUES.ufitom + JOLT);
 
-    window.__timelines = window.__timelines || {};
-    window.__timelines["04-bonus"] = tl;
-  })();
-</script>
+      // Scenes 4–5 — headline per word (dynamic-content-sequencing: each line anchors to its VO cue,
+      // word starts inside a line are pre-computed ONCE from content length, then tweened).
+      const LINES = [
+        { cue: CUES.ufitom, ids: ["02-pain-w1"], punch: true },
+        { cue: CUES.kolHachlata, ids: ["02-pain-w2", "02-pain-w3", "02-pain-w4"] },
+        { cue: CUES.masaUmatan, ids: ["02-pain-w5", "02-pain-w6"] },
+      ];
+      const WORD_BASE = 0.06;
+      const SEC_PER_CHAR = 0.035;
+      const WORD_TIMELINE = [];
+      LINES.forEach((line) => {
+        let t = line.cue;
+        line.ids.forEach((id) => {
+          const el = $(id);
+          WORD_TIMELINE.push({ el, start: t, punch: !!line.punch });
+          t += WORD_BASE + el.textContent.trim().length * SEC_PER_CHAR;
+        });
+      });
+      WORD_TIMELINE.forEach(({ el, start, punch }) => {
+        if (punch) {
+          tl.fromTo(
+            el,
+            { opacity: 0, y: 40, scale: 1.12 },
+            { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "expo.out" },
+            start + 0.02,
+          );
+        } else {
+          tl.fromTo(el, { opacity: 0, y: 46 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, start);
+        }
+      });
+
+      // "משא ומתן." — heart-red underline draws right→left (css-marker-patterns highlight mode), then hold still.
+      tl.fromTo($("02-pain-ulbar"), { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "power2.inOut" }, CUES.underline);
+
+      window.__timelines["02-pain"] = tl;
+    })();
+  </script>
 </template>
