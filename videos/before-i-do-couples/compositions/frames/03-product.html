@@ -604,23 +604,16 @@
     // Scene 3 — YIELD: the footage recedes into a rounded card (mat closes in) in one event
     // with the white stat card rising into the space it hands over.
     // Window inset 0 → 32px on every side via transform scale; the radius is authored in the
-    // window's local (pre-scale) space so it lands as a round 28px on screen.
+    // window's local (pre-scale) space so it lands as ~28px on screen (<1px x/y difference).
     const INSET = 32;
     const RADIUS = 28;
     const SX = (1080 - 2 * INSET) / 1080;
     const SY = (1920 - 2 * INSET) / 1920;
-    const rx = (RADIUS / SX).toFixed(2);
-    const ry = (RADIUS / SY).toFixed(2);
+    const LOCAL_RADIUS = RADIUS / ((SX + SY) / 2);
     tl.fromTo(
       hole,
-      { scaleX: 1, scaleY: 1, borderRadius: "0px / 0px" },
-      {
-        scaleX: SX,
-        scaleY: SY,
-        borderRadius: rx + "px / " + ry + "px",
-        duration: 1.0,
-        ease: "expo.out",
-      },
+      { scaleX: 1, scaleY: 1, borderRadius: 0 },
+      { scaleX: SX, scaleY: SY, borderRadius: LOCAL_RADIUS, duration: 1.0, ease: "expo.out" },
       CUES.shivim,
     );
     tl.fromTo(rim, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.out" }, CUES.shivim + 0.15);
