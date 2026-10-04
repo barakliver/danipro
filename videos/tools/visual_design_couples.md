@@ -1,15 +1,4 @@
----
-format: 1080x1920
-duration: 24s
-message: "רוב הזוגות לא רבים על החתונה — הם פשוט אף פעם לא דיברו עליה. Before I Do: ערב אחד, 70 שאלות, השיחה שחייבת לקרות לפני כל השאר."
-arc: PAS — hook → pain → product intro → how it plays → brand/CTA
-audience: זוגות מאורסים טריים
-mode: collaborative
-language: he
-music: none
-narration: user-recorded
----
-
+@@VIDEO_DIRECTION
 ## Video direction
 
 - **Palette (frame.md roles):** canvas white `bg`; brand blue `primary` #4F6BA5 for pills/labels/stat; `ink-deep` #1F2C4A for headlines on light and for the footage-dimming gradients (never pure black); `tint` #DDE7F5 for pill fills / secondary headline color on dark; `heart` #EF453D is the ONE accent — underlines, the heart mark, the "03" pill; nothing else is red.
@@ -22,33 +11,8 @@ narration: user-recorded
 - **Timing hooks:** durations are estimates until the user's recorded VO arrives; every frame keeps its cue times in one `CUES` object at the top of its script so re-timing is a numbers-only edit.
 - **Negative list:** no glow/bloom halos, no heavy drop shadows, no emoji glyphs (inline SVG only), no fake product UI, no lazy breathing, no back-half text pans, no bounce/elastic eases, no slideshow (front-load then freeze), no screensaver (independent floating), no CSS transitions/keyframes, no repeat/yoyo, no randomness.
 
-## Decisions
-
-- **Spine:** the blue Before I Do box — seen in the real footage, opened mid-film, closed again at the end (callback).
-- **Direction rule:** motion travels right → left (Hebrew reading direction).
-- **Captions:** fixed band at 62%–70% of the frame height, white on a soft ink pill; none on the final frame (on-screen text already says the line). Key content sits above the band.
-- **Instagram safe zones:** keep text out of the top ~10% (header), the bottom ~22% (caption/username), and the right ~10% from mid-height down (action buttons).
-- **Held frame:** the final frame — nothing moves but a slow push-in; the line lands.
-- **Bans:** no glow, no heavy shadows, no fake product UI, no slideshow (each beat a fresh card), no screensaver motion, no emoji glyphs (SVG icons only).
-- **Music:** none in the file — the user adds a track from Instagram's library at upload.
-
-## Frame 1 — לא רבים, פשוט לא דיברו
-
-- scene: Big Hebrew type lands in two beats over a dimmed, slow-moving table shot; the second line's key word "דיברו" underlined in heart red
-- voiceover: "רוב הזוגות לא רבים על החתונה. הם פשוט... אף פעם לא דיברו עליה."
-- duration: 4.5s
-- transition_in: cut
-- status: built
-- src: compositions/frames/01-hook.html
-- type: hook
-- persuasion: Pattern interrupt — reframing the expected conflict
-- beat: curiosity + recognition
-- asset_candidates: assets/user/clip-7319-box-table.mp4 — open box on a sunny table, moving camera, people blurred behind (dimmed under type)
-
-narrativeRole: Stops the scroll with the site's own thesis; the twist ("they never talked") is the value claim in beat 1.
-keyMessage: הבעיה היא לא מריבות — היא שיחה שלא קרתה.
-
-- blueprint: compose
+@@1
+- blueprint: kinetic-type-beats (Adapt)
 - focal: assets/user/clip-7319-box-table.mp4
 - roles: clip-7319-box-table = background (full-bleed, deep-ink gradient ~80% at top fading to ~35% at bottom), playback-rate 0.65 so 2.87s covers the frame
 - sfx: none
@@ -60,23 +24,8 @@ Scene 2 (0.9–2.1s): "לא רבים" then "על החתונה." continue the per
 Scene 3 (2.2–3.5s): second statement begins below (y≈560) in `tint`: "הם פשוט אף פעם" per-word; on "פשוט..." a deliberate half-beat of stillness (the pause is the tension).
 Scene 4 (3.5–4.5s): "לא דיברו עליה." lands; as "דיברו" is spoken a heart-red underline draws right→left beneath it (`css-marker-patterns`, highlight/underline sweep), the word itself flips to white. Hold — subtle jitter only (`sine-wave-loop`, low amplitude).
 
-## Frame 2 — השאלות שמגיעות בפגישה הראשונה
-
-- scene: Three vendor questions pop in one at a time as tinted pill cards on white — "כמה אורחים?" / "מי מהעבודה?" / "איפה ההורים נכנסים?" — then they shake and collapse under a bold line "ופתאום — כל החלטה היא משא ומתן."
-- voiceover: "כמה אורחים? מי מהעבודה? איפה ההורים נכנסים? ופתאום, כל החלטה הופכת למשא ומתן."
-- duration: 5.5s
-- transition_in: zoom-through
-- status: built
-- src: compositions/frames/02-pain.html
-- type: pain_point
-- persuasion: Pain agitation (the questions from the site's "הבעיה" section)
-- beat: overwhelm → tension
-- asset_candidates:
-
-narrativeRole: Makes the pain concrete with the exact questions couples meet at the first venue meeting (from the site).
-keyMessage: בלי שיחה מוקדמת, כל החלטה הופכת למשא ומתן.
-
-- blueprint: compose
+@@2
+- blueprint: kinetic-type-beats (Adapt)
 - focal: none (typography frame)
 - roles: none
 - sfx: none
@@ -89,22 +38,7 @@ Scene 3 (1.9–3.3s): pill "איפה ההורים נכנסים?" pops in at y≈
 Scene 4 (3.3–3.9s): on "ופתאום" the whole question cluster jolts once and tilts a few degrees askew while dimming to ~45% (it stays readable as the sketch's landed state — pushed into the background, not removed); "ופתאום," appears in ink-deep at y≈720.
 Scene 5 (3.9–5.5s): "כל החלטה היא" then "משא ומתן." reveal per word (`dynamic-content-sequencing`), Assistant 700 ~104px ink-deep; on "משא ומתן" a heart-red underline draws right→left (`css-marker-patterns`). Hold still.
 
-## Frame 3 — הקופסה
-
-- scene: The real overhead clip — a hand lifts the lid of the blue Before I Do box on a sunny table; wordmark "Before I Do" in Caveat writes on above, subline "משחק קלפים לזוגות מאורסים"
-- voiceover: "Before I Do. משחק קלפים לזוגות מאורסים — שבעים שאלות שחובה לשאול לפני החתונה."
-- duration: 5s
-- transition_in: blur-crossfade
-- status: built
-- src: compositions/frames/03-product.html
-- type: product_intro
-- persuasion: Show-don't-tell proof (real product, real hands)
-- beat: relief + curiosity
-- asset_candidates: assets/user/clip-7317-open-box-top.mp4 — overhead, hand opens the box lid on a meze table; capture/assets/before-i-do.webp — box/brand image
-
-narrativeRole: Names the solution right after the pain, on real footage of the product.
-keyMessage: 70 שאלות, בקופסה אחת.
-
+@@3
 - blueprint: video-text-pivot (Adapt)
 - focal: assets/user/clip-7317-open-box-top.mp4
 - roles: clip-7317-open-box-top = background (full-bleed, data-media-start 1.0 so the lid lifts inside the frame; deep-ink gradient on the top ~40%)
@@ -117,22 +51,7 @@ Scene 2 (1.0–2.6s): subline "משחק קלפים לזוגות מאורסים" 
 Scene 3 (2.7–3.6s): YIELD — the footage recedes (scale 1.00→0.94, corners round to ~28px, a hairline `border` appears) while a white stat card rises from below into the sketch's position (x 86–994, y≈864–1060): "70" (blue 700 ~184px) counts up 0→70 as "שבעים" is spoken (`counting-dynamic-scale`).
 Scene 4 (3.6–5.0s): the card's label "שאלות שחובה לשאול / לפני החתונה" (ink-deep 600 ~58px) reveals line by line beside the number. Hold.
 
-## Frame 4 — שולפים קלף
-
-- scene: Two quick real clips — a card pulled from the box ("להפתיע במופע או לתת לאירוע לזרום בכיף"), then a hand holding a card ("לשכור מקום התארגנות או להתארגן בבית"); three short cue words stamp in sync: "פותחים בקבוק" · "שולפים קלף" · "מדברים"
-- voiceover: "פותחים בקבוק, שולפים קלף, ומדברים. על מה חשוב לכם, ועל מה אתם לא מוותרים."
-- duration: 5.5s
-- transition_in: crossfade
-- status: built
-- src: compositions/frames/04-play.html
-- type: feature_showcase
-- persuasion: Friction reduction (three simple steps) + Feature-to-benefit translation
-- beat: ease + warmth
-- asset_candidates: assets/user/clip-7318-pull-card.mp4 — hand pulls a card from the open box; assets/user/clip-7298-hand-card.mp4 — hand holds up an "X או Y" card in front of the box
-
-narrativeRole: Shows how it plays — simple, intimate, fun — and translates it into what couples gain.
-keyMessage: ערב אחד של שיחה אמיתית, בלי שיפוטיות.
-
+@@4
 - blueprint: compose
 - focal: assets/user/clip-7298-hand-card.mp4
 - roles: clip-7318-pull-card = background (first half, full-bleed, data-media-start 2.6, plays 0.0–1.95s) · clip-7298-hand-card = background (second half, full-bleed, playback-rate 0.6, 1.95–5.5s) · both with a deep-ink gradient on the top ~45%
@@ -145,22 +64,7 @@ Scene 2 (1.0–1.9s): pill "02 · שולפים קלף" slides in below (y≈290)
 Scene 3 (1.9–2.7s): cut-the-curve (`cut-catalog.md`) to clip 7298 (hand holding the card up) — the cut lands mid-motion; pill "03 · מדברים" (heart-red fill, white text) pops in at y≈400.
 Scene 4 (2.7–5.5s): a white dilemma pill appears under the steps (y≈540, right-aligned, max width ~860px): its text cycles in place by hard cut (`discrete-text-sequence`, in-place token cycle) through the box's real cards — "דיג'יי או להקה חיה" (2.7s) → "הגשה לשולחן או בופה" (3.5s) → "להביא את הכלב או להשאיר אותו בבית" (4.3s, holds) — the word "או" always heart-red 700. Hold.
 
-## Frame 5 — שיחה אחת, לפני כל השאר
-
-- scene: The closed box in sunlight (user photo) slowly pushes in; heart-red fingerprint heart pulses once; tagline "שיחה אחת, לפני כל השאר." then wordmark + "beforeido.co.il" in a pill
-- voiceover: "שיחה אחת, לפני כל השאר. Before I Do."
-- duration: 4s
-- transition_in: crossfade
-- status: built
-- src: compositions/frames/05-cta.html
-- type: cta
-- persuasion: Brand promise close (the site's hero line)
-- beat: peace of mind + urgency-to-act
-- asset_candidates: assets/user/box-closed.jpg — closed blue box on sunlit concrete; capture/assets/svgs/logo-02130e29.svg — red heart
-
-narrativeRole: Lands the brand promise and tells them where to get it.
-keyMessage: Before I Do — beforeido.co.il
-
+@@5
 - blueprint: titlecard-reveal (Reproduce — CTA card)
 - focal: assets/user/box-closed.jpg
 - roles: box-closed = background (full-bleed, object-position center 70%, white gradient on the top ~50% for the headline)

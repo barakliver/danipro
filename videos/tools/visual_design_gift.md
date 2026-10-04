@@ -1,15 +1,4 @@
----
-format: 1080x1920
-duration: 23s
-message: "עם כל הכבוד לעוד סט מצעים — Before I Do היא המתנה היחידה שזוג מאורס באמת צריך עכשיו."
-arc: Ticker-takeover hook → reframe → proof (the funny cards) → the gifter's bonus → CTA
-audience: חברים ומשפחה של זוגות מאורסים
-mode: collaborative
-language: he
-music: none
-narration: user-recorded
----
-
+@@VIDEO_DIRECTION
 ## Video direction
 
 - **Palette (frame.md roles):** brand blue `primary` #4F6BA5 as the hook field and for pills/stat; canvas white / `canvas-alt` #F1F4F9 for light frames; `ink-deep` #1F2C4A for headlines on light and for footage-dimming gradients; `tint` #DDE7F5 for chat bubbles and secondary pills; `heart` #EF453D is the ONE accent — strike-throughs, underlines, the heart mark, the bonus pill and the gift tag.
@@ -21,33 +10,8 @@ narration: user-recorded
 - **Timing hooks:** durations are estimates until the user's recorded VO arrives; every frame keeps its cue times in one `CUES` object at the top of its script.
 - **Negative list:** no glow/bloom halos, no heavy drop shadows, no emoji glyphs (inline SVG only), no fake product UI, no lazy breathing, no back-half text pans, no elastic/bounce as a default, no slideshow, no screensaver, no CSS transitions/keyframes, no repeat/yoyo, no randomness.
 
-## Decisions
-
-- **Spine:** the blue Before I Do box — seen in the real footage, opened mid-film, closed again at the end (callback).
-- **Direction rule:** motion travels right → left (Hebrew reading direction).
-- **Captions:** fixed band at 62%–70% of the frame height, white on a soft ink pill; none on the final frame (on-screen text already says the line). Key content sits above the band.
-- **Instagram safe zones:** keep text out of the top ~10% (header), the bottom ~22% (caption/username), and the right ~10% from mid-height down (action buttons).
-- **Held frame:** the final frame — nothing moves but a slow push-in; the line lands.
-- **Bans:** no glow, no heavy shadows, no fake product UI, no slideshow (each beat a fresh card), no screensaver motion, no emoji glyphs (SVG icons only).
-- **Music:** none in the file — the user adds a track from Instagram's library at upload.
-
-## Frame 1 — עוד סט מצעים?
-
-- scene: "החברים התארסו" title with a small red heart, then cliché gift options cycle fast in one swapping slot — "סט מצעים?" / "מסגרת עם השמות?" / "מגבות עם רקמה?" — each struck through in heart red
-- voiceover: "החברים התארסו. מגיעה להם מתנה. אז... עוד סט מצעים? מסגרת עם השמות?"
-- duration: 5s
-- transition_in: cut
-- status: built
-- src: compositions/frames/01-hook.html
-- type: hook
-- persuasion: Negative contrast — the cliché gifts everyone already bought
-- beat: recognition + amusement
-- asset_candidates:
-
-narrativeRole: Puts the viewer in the gifter's shoes and mocks the boring options before offering the alternative.
-keyMessage: מתנה בנאלית? לא במשמרת שלכם.
-
-- blueprint: compose
+@@1
+- blueprint: kinetic-type-beats (Adapt)
 - focal: none (typography frame)
 - roles: none
 - sfx: none
@@ -60,22 +24,7 @@ Scene 3 (2.2–2.7s): the slot column appears (centered on y≈570): faint ghost
 Scene 4 (2.7–3.8s): center slot rolls up to "עוד סט מצעים?" (white 700 ~135px); at the end of the phrase a heart-red strike-through draws right→left across it with a tiny snap (`css-marker-patterns`, strike).
 Scene 5 (3.8–5.0s): the ticker rolls one step — the struck "עוד סט מצעים?" moves up to ghost position (keeping its strike), "מסגרת עם השמות?" rolls into the center slot and gets its own strike on cue; a new ghost "מגבות עם רקמה?" slides into the lower slot. Hold.
 
-## Frame 2 — המתנה שהם אשכרה צריכים
-
-- scene: Hero crashes in — the real overhead clip of the box being opened; line "עם כל הכבוד למצעים..." then "זו המתנה שהם אשכרה צריכים עכשיו."
-- voiceover: "עם כל הכבוד למצעים — זו המתנה היחידה שהם אשכרה צריכים עכשיו."
-- duration: 4.5s
-- transition_in: zoom-through
-- status: built
-- src: compositions/frames/02-reveal.html
-- type: product_intro
-- persuasion: Reframe — from "nice object" to "what they need right now"
-- beat: surprise → relief
-- asset_candidates: assets/user/clip-7317-open-box-top.mp4 — overhead, hand opens the box on a meze table
-
-narrativeRole: The product crashes in as the answer to the cliché cycle.
-keyMessage: Before I Do = המתנה שבאמת צריך.
-
+@@2
 - blueprint: ticker-takeover (Adapt)
 - focal: assets/user/clip-7317-open-box-top.mp4
 - roles: clip-7317-open-box-top = background (full-bleed, data-media-start 1.0, deep-ink gradient on the top ~60%)
@@ -88,23 +37,8 @@ Scene 2 (1.6–2.6s): "זו המתנה שהם" (white 700 ~119px, y≈300) revea
 Scene 3 (2.6–3.4s): "אשכרה" SLAMS in (`kinetic-beat-slam`: arrives oversized with motion-blur, lands heavy on a long settle) and a heart-red underline sweeps right→left under it; "צריכים" follows.
 Scene 4 (3.4–4.5s): "עכשיו." lands; hold with subtle jitter only.
 
-## Frame 3 — להביא את הכלב?
-
-- scene: The site's real "X או Y" cards flip in one after another — "להביא את הכלב או להשאיר אותו בבית" then the real clip of a hand holding "לשכור מקום התארגנות או להתארגן בבית"; counter "70 קלפים" ticks up
-- voiceover: "להביא את הכלב לחתונה, או להשאיר אותו בבית? שבעים שאלות כאלה — שעדיף שיעלו עכשיו בסלון, ולא מול הספק."
-- duration: 6s
-- transition_in: crossfade
-- status: built
-- src: compositions/frames/03-cards.html
-- type: feature_showcase
-- persuasion: Show-don't-tell proof with a laugh (the real funny card)
-- beat: amusement + recognition
-- asset_candidates: capture/assets/37-ef04c4.webp — card "להביא את הכלב או להשאיר אותו בבית"; capture/assets/card-back-46f7ecfe-143643.webp — card back; assets/user/clip-7298-hand-card.mp4 — hand holds up an "X או Y" card
-
-narrativeRole: Proves it's fun, not a heavy "couples therapy" game, and why it matters now.
-keyMessage: 70 שאלות, שכדאי שיעלו עכשיו.
-
-- blueprint: compose
+@@3
+- blueprint: kinetic-type-beats (Adapt)
 - focal: capture/assets/37-ef04c4.webp
 - roles: 37-ef04c4 (dog card) = cutout hero (front, right) · card-back-46f7ecfe-143643 = supporting (behind, left, tilted) · clip-7298-hand-card = dropped from the build (the approved sketch keeps the two cards as the landed state)
 - sfx: none
@@ -116,22 +50,7 @@ Scene 2 (1.4–2.6s): a second card back slides in behind it to the left (rotate
 Scene 3 (2.7–3.9s): top-right counter "70" (blue 700 ~162px, y≈130) counts up 0→70 (`counting-dynamic-scale`) with label "קלפים כאלה" (ink-deep 600 ~65px) revealing beside it.
 Scene 4 (3.9–6.0s): two chips pop in under the counter row's level on the left side, above the caption band (y≈1060–1170, kept left of x≈940): "בסלון" with a blue check icon (inline SVG) on its cue, then "מול הספק" which gets a heart-red strike and a red ✕ icon on its cue. Hold.
 
-## Frame 4 — והבונוס שלכם
-
-- scene: A phone-style chat bubble stack fills with voice-note bubbles ("🎤 0:47 · סידורי הושבה", "🎤 1:32 · עוד על השולחן של הדודים") then gets swiped away; line "פחות הודעות קוליות על סידורי הושבה."
-- voiceover: "והבונוס שלכם? פחות הודעות קוליות על סידורי הושבה."
-- duration: 4s
-- transition_in: push-slide LEFT
-- status: built
-- src: compositions/frames/04-bonus.html
-- type: benefit_highlight
-- persuasion: Self-interest twist — the gift helps the giver too
-- beat: laugh + belonging
-- asset_candidates:
-
-narrativeRole: The punchline — buying it is good for the friend too.
-keyMessage: זה נחמד גם בשבילכם.
-
+@@4
 - blueprint: compose
 - focal: none (the chat-bubble stack is the hero; pure DOM + inline SVG)
 - roles: none
@@ -144,22 +63,7 @@ Scene 2 (0.4–1.4s): voice-note bubbles pop in rapid-fire, stacked left-aligned
 Scene 3 (1.1–2.3s): on "פחות" the stack gets swiped: the bubbles compress slightly and dim, the third fades to ~40% (sketch landed state), and a heart-red strike line sweeps right→left across the whole stack; the headline "פחות הודעות קוליות" (ink-deep 700 ~104px, y≈780) reveals per word.
 Scene 4 (2.3–4.0s): "על סידורי הושבה." completes the headline; heart-red underline draws right→left under "סידורי הושבה". Hold.
 
-## Frame 5 — ארוז ומוכן למסירה
-
-- scene: Closed box in sunlight with a heart-red ribbon/tag drawing on; "Before I Do" wordmark, "מגיע ארוז ומוכן למסירה", pill "beforeido.co.il", tiny wink line "אחד לזוג. אלא אם אתם מכירים עוד זוג שמתחתן."
-- voiceover: "Before I Do. מגיע ארוז, ומוכן למסירה."
-- duration: 3.5s
-- transition_in: crossfade
-- status: built
-- src: compositions/frames/05-cta.html
-- type: cta
-- persuasion: Friction reduction (gift-ready) + wink
-- beat: confidence + urgency-to-act
-- asset_candidates: assets/user/box-closed.jpg — closed blue box on sunlit concrete; capture/assets/svgs/logo-02130e29.svg — red heart
-
-narrativeRole: Removes the last friction (wrapping) and tells them where to buy.
-keyMessage: Before I Do — beforeido.co.il
-
+@@5
 - blueprint: titlecard-reveal (Reproduce — CTA card)
 - focal: assets/user/box-closed.jpg
 - roles: box-closed = background (full-bleed, object-position center 70%, white gradient on the top ~52%)
