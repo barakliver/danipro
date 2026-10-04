@@ -442,6 +442,11 @@
       position: relative;
       white-space: nowrap;
     }
+    /* RTL anchor: the oversized word grows leftward from its start edge, so it stays in frame. */
+    .\30 2-reveal-slam,
+    .\30 2-reveal-echo {
+      transform-origin: 90% 60%;
+    }
     .\30 2-reveal-echo {
       position: absolute;
       left: 0;
@@ -594,8 +599,14 @@
       tl.fromTo(slam, { opacity: 0 }, { opacity: 1, duration: 0.05, ease: "none" }, CUES.ashkara);
       tl.fromTo(
         slam,
-        { scale: 2.8, rotation: -7, filter: "blur(18px)" },
-        { scale: 0.92, rotation: 0, filter: "blur(0px)", duration: SLAM_IN, ease: "power2.in" },
+        { scale: 2.8, rotation: -7 },
+        { scale: 0.92, rotation: 0, duration: SLAM_IN, ease: "power2.in" },
+        CUES.ashkara,
+      );
+      tl.fromTo(
+        slam,
+        { filter: "blur(10px)" },
+        { filter: "blur(0px)", duration: SLAM_IN, ease: "none" },
         CUES.ashkara,
       );
       tl.fromTo(
@@ -620,8 +631,8 @@
 
       // reactive displacement — the struck lines above get knocked up, then settle heavy
       [
-        ["02-reveal-lead", -9],
-        ["02-reveal-line-a", -18],
+        ["02-reveal-lead", -14],
+        ["02-reveal-line-a", -28],
       ].forEach(([id, dy]) => {
         tl.fromTo($(id), { y: 0 }, { y: dy, duration: 0.06, ease: "power2.out" }, IMPACT);
         tl.fromTo(
@@ -662,7 +673,7 @@
         CUES.achshav + 0.24,
       );
 
-      // hold: subtle dual-frequency jitter on the resting hero (sine-wave register, no yoyo)
+      // hold: subtle dual-frequency jitter on the resting hero (sine-wave register, computed per frame)
       const jit = $("02-reveal-jit");
       const J0 = CUES.achshav;
       const JDUR = CUES.end - J0;

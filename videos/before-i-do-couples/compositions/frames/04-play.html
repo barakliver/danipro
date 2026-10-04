@@ -362,48 +362,48 @@
       overflow: hidden;
       font-family: 'Assistant', sans-serif;
     }
-    /* Layer 0 — deep-ink legibility gradient over the top ~45% (footage plays under the frame) */
-    [id="04-play-shade"] {
+    /* Layer 0: deep-ink legibility gradient over the top ~45% (footage plays under this frame) */
+    #f04-play-shade {
       position: absolute;
       inset: 0;
       width: 1080px;
       height: 1920px;
       background: linear-gradient(180deg, rgba(31, 44, 74, 0.7) 0%, rgba(31, 44, 74, 0) 45%);
     }
-    /* Layer 1 — the white light sweep that sells the footage cut (right -> left, 0.12s) */
-    [id="04-play-flash-layer"] {
+    /* Layer 1: white light sweep that sells the footage cut (right to left, 0.12s).
+       Parked off-canvas on both sides of its window, so it needs no visibility toggling. */
+    #f04-play-flash-layer {
       position: absolute;
       inset: 0;
       width: 1080px;
       height: 1920px;
       overflow: hidden;
     }
-    [id="04-play-flash"] {
+    #f04-play-flash {
       position: absolute;
       left: 0;
       top: 0;
       width: 820px;
       height: 1920px;
-      opacity: 0;
       background: linear-gradient(90deg,
         rgba(255, 255, 255, 0) 0%,
         rgba(255, 255, 255, 0.5) 34%,
         rgba(255, 255, 255, 0.82) 50%,
         rgba(255, 255, 255, 0.5) 66%,
         rgba(255, 255, 255, 0) 100%);
-      /* fades out above the caption band (y 1190) */
+      /* dies out above the caption band (y 1190) */
       -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 46%, transparent 61%);
       mask-image: linear-gradient(180deg, #000 0%, #000 46%, transparent 61%);
     }
-    /* Layer 2 — content */
-    [id="04-play-content"] {
+    /* Layer 2: content */
+    #f04-play-content {
       position: absolute;
       inset: 0;
       width: 1080px;
       height: 1920px;
     }
-    /* right-anchored column (sketch: right 5.5cqw), carries the cut-the-curve drift */
-    [id="04-play-carry"] {
+    /* right-anchored column (sketch: right 5.5cqw); carries the cut-the-curve drift */
+    #f04-play-carry {
       position: absolute;
       top: 190px;
       right: 59px;
@@ -414,7 +414,7 @@
       gap: 18px;
       direction: ltr;
     }
-    [class~="04-play-pill"] {
+    .f04-play-pill {
       border-radius: 100px;
       padding: 17px 45px;
       font-size: 64px;
@@ -424,14 +424,14 @@
       background: #FFFFFF;
       color: #4F6BA5;
     }
-    [class~="04-play-pill--talk"] {
+    .f04-play-pill-talk {
       background: #EF453D;
       color: #FFFFFF;
     }
-    [id="04-play-dilemma"] {
+    #f04-play-dilemma {
       margin-top: 18px;
     }
-    [id="04-play-dilemma-card"] {
+    #f04-play-dilemma-card {
       display: flex;
       align-items: center;
       gap: 16px;
@@ -444,34 +444,36 @@
       line-height: 1.2;
       white-space: nowrap;
     }
-    [id="04-play-heart"] {
+    #f04-play-heart {
       flex: none;
       width: 34px;
       height: 31px;
       fill: #EF453D;
     }
-    [class~="04-play-or"] {
+    .f04-play-or {
       color: #EF453D;
       font-weight: 700;
     }
   </style>
 
-  <div id="root" data-composition-id="04-play" data-width="1080" data-height="1920" data-duration="5.5">
-    <div id="04-play-shade" class="clip" data-start="0" data-duration="5.5" data-track-index="0"></div>
+  <div id="root" data-composition-id="04-play" data-width="1080" data-height="1920" data-duration="6">
+    <div id="f04-play-shade" class="clip" data-start="0" data-duration="6" data-track-index="0"></div>
 
-    <div id="04-play-flash-layer" class="clip" data-start="0" data-duration="5.5" data-track-index="1">
-      <div id="04-play-flash"></div>
+    <div id="f04-play-flash-layer" class="clip" data-start="0" data-duration="6" data-track-index="1">
+      <div id="f04-play-flash" data-layout-allow-overflow="true"></div>
     </div>
 
-    <div id="04-play-content" class="clip" data-start="0" data-duration="5.5" data-track-index="2">
-      <div id="04-play-carry">
-        <div id="04-play-step1" class="04-play-pill" dir="rtl" lang="he">01 · פותחים בקבוק</div>
-        <div id="04-play-step2" class="04-play-pill" dir="rtl" lang="he">02 · שולפים קלף</div>
-        <div id="04-play-step3" class="04-play-pill 04-play-pill--talk" dir="rtl" lang="he">03 · מדברים</div>
-        <div id="04-play-dilemma">
-          <div id="04-play-dilemma-card" dir="rtl" lang="he">
-            <svg id="04-play-heart" viewBox="0 0 24 22" aria-hidden="true"><path d="M12 21.6 10.3 20C4.2 14.5.2 10.9.2 6.5.2 2.9 3 .1 6.6.1c2 0 4 .9 5.4 2.4C13.4 1 15.4.1 17.4.1 21 .1 23.8 2.9 23.8 6.5c0 4.4-4 8-10.1 13.5L12 21.6Z"/></svg>
-            <span id="04-play-dilemma-text"><span id="04-play-opt-a">דיג'יי</span> <span class="04-play-or">או</span> <span id="04-play-opt-b">להקה חיה</span></span>
+    <div id="f04-play-content" class="clip" data-start="0" data-duration="6" data-track-index="2">
+      <div id="f04-play-carry">
+        <div id="f04-play-step1" class="f04-play-pill" dir="rtl" lang="he">01 · פותחים בקבוק</div>
+        <div id="f04-play-step2" class="f04-play-pill" dir="rtl" lang="he">02 · שולפים קלף</div>
+        <div id="f04-play-step3-slot">
+          <div id="f04-play-step3" class="f04-play-pill f04-play-pill-talk" dir="rtl" lang="he">03 · מדברים</div>
+        </div>
+        <div id="f04-play-dilemma">
+          <div id="f04-play-dilemma-card" dir="rtl" lang="he">
+            <svg id="f04-play-heart" viewBox="0 0 24 22" aria-hidden="true"><path d="M12 21.6 10.3 20C4.2 14.5.2 10.9.2 6.5.2 2.9 3 .1 6.6.1c2 0 4 .9 5.4 2.4C13.4 1 15.4.1 17.4.1 21 .1 23.8 2.9 23.8 6.5c0 4.4-4 8-10.1 13.5L12 21.6Z"/></svg>
+            <span id="f04-play-dilemma-text"><span id="f04-play-opt-a">דיג'יי</span> <span class="f04-play-or">או</span> <span id="f04-play-opt-b">להקה חיה</span></span>
           </div>
         </div>
       </div>
@@ -480,70 +482,68 @@
 
   <script>
     (function () {
-      // Every timing lives here — re-time to the recorded VO by editing numbers only.
+      // Every timing lives here: re-time to the recorded VO by editing numbers only.
       const CUES = {
-        bottle: 0.05,       // "פותחים בקבוק" — pill 01 slides in from the right
-        card: 1.0,          // "שולפים קלף" — pill 02 slides in below
-        talk: 1.9,          // "ומדברים" — pill 03 pops in, still moving across the cut
+        bottle: 0.05,       // "פותחים בקבוק": pill 01 slides in from the right
+        card: 1.0,          // "שולפים קלף": pill 02 slides in below
+        talk: 1.9,          // "ומדברים": pill 03 pops in, still moving across the cut
         cut: 1.95,          // footage hard cut f4a-pull-card -> f4b-hand-card (cut-the-curve seam)
-        matters: 2.7,       // "על מה חשוב לכם" — dilemma slot appears with card 1
+        matters: 2.7,       // "על מה חשוב לכם": dilemma slot appears with card 1
         dilemma2: 3.5,      // card 2 (hard cut in place)
-        noCompromise: 3.9,  // "לא מוותרים" — reference only (card 2 still showing)
-        dilemma3: 4.3,      // card 3 (hard cut in place) — holds to the end
+        noCompromise: 3.9,  // "לא מוותרים": reference only (card 2 is showing)
+        dilemma3: 4.3,      // card 3 (hard cut in place), holds to the end
         end: 5.5,
       };
 
-      const el = (name) => document.getElementById("04-play-" + name);
-      const step1 = el("step1");
-      const step2 = el("step2");
-      const step3 = el("step3");
-      const carry = el("carry");
-      const flash = el("flash");
-      const dilemma = el("dilemma");
-      const dilemmaCard = el("dilemma-card");
-      const optA = el("opt-a");
-      const optB = el("opt-b");
+      const step1 = document.getElementById("f04-play-step1");
+      const step2 = document.getElementById("f04-play-step2");
+      const step3Slot = document.getElementById("f04-play-step3-slot");
+      const step3 = document.getElementById("f04-play-step3");
+      const carry = document.getElementById("f04-play-carry");
+      const flash = document.getElementById("f04-play-flash");
+      const dilemma = document.getElementById("f04-play-dilemma");
+      const dilemmaCard = document.getElementById("f04-play-dilemma-card");
+      const optA = document.getElementById("f04-play-opt-a");
+      const optB = document.getElementById("f04-play-opt-b");
 
       const tl = gsap.timeline({ paused: true });
 
-      // Scene 1 + 2 — step pills slide in from the right edge (partial travel + fast fade), expo settle
-      [[step1, CUES.bottle], [step2, CUES.card]].forEach(([pill, at]) => {
-        tl.fromTo(pill, { x: 300 }, { x: 0, duration: 0.8, ease: "expo.out" }, at);
-        tl.fromTo(pill, { opacity: 0 }, { opacity: 1, duration: 0.22, ease: "power2.out" }, at);
-      });
+      // Scenes 1 + 2: step pills slide in from the right edge (partial travel), expo settle.
+      // Opacity rides the same expo.out curve, so it is ~90% in after the first 0.25s.
+      tl.fromTo(step1, { x: 300, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, ease: "expo.out" }, CUES.bottle);
+      tl.fromTo(step2, { x: 300, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, ease: "expo.out" }, CUES.card);
 
-      // Scene 3 — cut-the-curve seam. The whole step column drifts leftward on one power3.inOut
-      // curve whose peak velocity sits exactly on the footage cut, so the pills already on screen
-      // keep moving in the same direction and speed across it (mirrored in/out halves).
-      const CARRY = 20;    // px each side of the anchor
-      const HALF = 0.26;   // s each half
+      // Scene 3: cut-the-curve seam. The whole step column drifts left on one power3.inOut
+      // curve (mirrored power3.in / power3.out halves) whose peak velocity lands exactly on
+      // the footage cut, so the pills on screen keep their direction and speed across it.
+      const CARRY = 20;   // px either side of the sketch anchor
+      const HALF = 0.26;  // s per half
       tl.fromTo(carry, { x: CARRY }, { x: -CARRY, duration: HALF * 2, ease: "power3.inOut" }, CUES.cut - HALF);
 
-      // Pill 03 enters mid-flight on the same leftward path (power4.out back half) and pops.
-      tl.fromTo(step3, { x: 260 }, { x: 0, duration: 0.55, ease: "power4.out" }, CUES.talk);
-      tl.fromTo(step3, { opacity: 0 }, { opacity: 1, duration: 0.1, ease: "none" }, CUES.talk);
+      // Pill 03 enters already moving on the same leftward path (power4.out back half),
+      // crossing the cut mid-flight, and pops (scale on the inner pill).
+      tl.fromTo(step3Slot, { x: 260, opacity: 0 }, { x: 0, opacity: 1, duration: 0.55, ease: "power4.out" }, CUES.talk);
       tl.fromTo(step3, { scale: 0.82, transformOrigin: "100% 50%" },
         { scale: 1, transformOrigin: "100% 50%", duration: 0.5, ease: "back.out(2.2)" }, CUES.talk);
 
-      // White light sweep right -> left, 0.12s centred on the cut.
+      // White light sweep, right to left, 0.12s centred on the cut. Off-canvas before and after.
       const SWEEP = 0.12;
-      gsap.set(flash, { x: 1160, skewX: -14 });
-      tl.set(flash, { opacity: 1 }, CUES.cut - SWEEP / 2);
-      tl.fromTo(flash, { x: 1160, skewX: -14 },
-        { x: -1080, skewX: -14, duration: SWEEP, ease: "none", immediateRender: false }, CUES.cut - SWEEP / 2);
-      tl.set(flash, { opacity: 0 }, CUES.cut + SWEEP / 2);
+      const FLASH_FROM = 1160;   // fully right of the canvas (skew included)
+      const FLASH_TO = -1080;    // fully left of the canvas (skew included)
+      gsap.set(flash, { x: FLASH_FROM, skewX: -14 });
+      tl.fromTo(flash, { x: FLASH_FROM }, { x: FLASH_TO, duration: SWEEP, ease: "none", immediateRender: false }, CUES.cut - SWEEP / 2);
 
-      // Scene 4 — dilemma slot slides in on the same leftward path, then its text cycles in place.
-      tl.fromTo(dilemma, { x: 260 }, { x: 0, duration: 0.75, ease: "expo.out" }, CUES.matters);
-      tl.fromTo(dilemma, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, CUES.matters);
+      // Scene 4: the dilemma slot slides in on the same leftward path, then its text cycles in place.
+      tl.fromTo(dilemma, { x: 260, opacity: 0 }, { x: 0, opacity: 1, duration: 0.75, ease: "expo.out" }, CUES.matters);
 
       // discrete-text-sequence: sparse states, reverse search on every update, instant swaps.
+      // Each swap also "stamps" the card (scale 1.06 -> 1, derived from time, so seek-safe).
       const SEQUENCE = [
         { t: CUES.matters, a: "דיג'יי", b: "להקה חיה" },
         { t: CUES.dilemma2, a: "הגשה לשולחן", b: "בופה" },
         { t: CUES.dilemma3, a: "להביא את הכלב", b: "להשאיר אותו בבית" },
       ];
-      const PUNCH = 0.06;      // card "stamp" on each hard swap
+      const PUNCH = 0.06;
       const PUNCH_DUR = 0.4;
       let shown = 0;
       optA.textContent = SEQUENCE[0].a;
