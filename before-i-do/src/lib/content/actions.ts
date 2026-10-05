@@ -8,6 +8,8 @@ import { collectCopy, contentBodySchema } from "@/lib/domain/content-body";
 import { statusChangePatch } from "@/lib/domain/status";
 import { detectTopics } from "@/lib/domain/topics";
 import { snapshotOf } from "./snapshot";
+import { scoreVoice } from "@/lib/voice/score";
+import { loadAvoidList } from "@/lib/voice/brand-words";
 
 export type ActionResult<T = undefined> = { ok: true; data: T } | { ok: false; error: string };
 
@@ -41,6 +43,28 @@ export type ContentPatch = z.infer<typeof patchSchema>;
 /** A new version at most every 3 minutes of continuous editing. */
 const VERSION_INTERVAL_MS = 3 * 60 * 1000;
 
+/** content_assets mirrors which Gallery photos a piece uses (usage history, "not used yet"). */
+async function syncContentAssets(
+  supabase: Awaited<ReturnType<typeof getStudio>>["supabase"],
+  workspaceId: string,
+  contentId: string,
+  body: z.infer<typeof contentBodySchema>,
+) {
+  const wanted = [...(body.frames ?? []), ...(body.slides ?? [])]
+    .map((f, position) => ({ asset_id: f.assetId, role: f.id, position }))
+    .filter((r): r is { asset_id: string; role: string; position: number } => Boolean(r.asset_id));
+  const { data: existing } = await supabase.from("content_assets").select("id, asset_id, role").eq("content_id", contentId);
+  const key = (r: { asset_id: string; role: string }) => `${r.asset_id}:${r.role}`;
+  const wantedKeys = new Set(wanted.map(key));
+  const stale = (existing ?? []).filter((r) => !wantedKeys.has(key(r))).map((r) => r.id);
+  if (stale.length) await supabase.from("content_assets").delete().in("id", stale);
+  const have = new Set((existing ?? []).map(key));
+  const fresh = wanted.filter((r) => !have.has(key(r)));
+  if (fresh.length) {
+    await supabase.from("content_assets").insert(fresh.map((r) => ({ ...r, workspace_id: workspaceId, content_id: contentId })));
+  }
+}
+
 function fail(error: unknown): { ok: false; error: string } {
   const message = error instanceof Error ? error.message : typeof error === "object" && error && "message" in error ? String((error as { message: unknown }).message) : "משהו השתבש";
   return { ok: false, error: message };
@@ -68,6 +92,9 @@ export async function saveContent(id: string, patch: ContentPatch, reason: "auto
       const body = contentBodySchema.safeParse(merged.body);
       const copy = collectCopy({ hook: merged.hook, caption: merged.caption, cta: merged.cta, body: body.success ? body.data : {} });
       update.topic_tags = detectTopics(merged.topic, ...copy);
+      const voice = scoreVoice(copy, { avoid: await loadAvoidList(studio), productIntent: merged.product_presence as "none" | "natural" | "direct" });
+      update.sounds_like_us = voice.score;
+      update.score_breakdown = { source: voice.source, dimensions: voice.dimensions, flags: voice.flags.map((f) => f.code) };
     }
 
     const { data: saved, error } = await supabase
@@ -78,6 +105,8 @@ export async function saveContent(id: string, patch: ContentPatch, reason: "auto
       .select("updated_at")
       .single();
     if (error) throw error;
+
+    if ("body" in clean && clean.body) await syncContentAssets(supabase, workspace.id, id, clean.body);
 
     const { data: lastVersion } = await supabase
       .from("content_versions")

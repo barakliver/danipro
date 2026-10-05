@@ -159,3 +159,20 @@ export const IconStar = ({ filled, ...p }: IconProps & { filled?: boolean }) => 
     <path d="M12 4l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 16.4 7.2 18.9l.9-5.4-3.9-3.8 5.4-.8z" />
   </Base>
 );
+export const IconArrowUp = (p: IconProps) => (
+  <Base {...p}>
+    <path d="M12 19V5M6 11l6-6 6 6" />
+  </Base>
+);
+export const IconArrowDown = (p: IconProps) => (
+  <Base {...p}>
+    <path d="M12 5v14M6 13l6 6 6-6" />
+  </Base>
+);
+export const IconImage = (p: IconProps) => (
+  <Base {...p}>
+    <rect x="4" y="4" width="16" height="16" rx="3" />
+    <circle cx="9.5" cy="9.5" r="1.5" />
+    <path d="M5 17l4.5-4 3.5 3 2.5-2 3.5 3" />
+  </Base>
+);

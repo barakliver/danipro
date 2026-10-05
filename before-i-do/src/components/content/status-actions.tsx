@@ -9,7 +9,19 @@ import { cn } from "@/lib/utils/cn";
 import { IconCheck } from "@/components/ui/icons";
 
 /** The quick status steps a person actually taps: צולם / מוכן / פורסם. */
-export function StatusActions({ id, format, status, className }: { id: string; format: ContentFormat; status: ContentStatus; className?: string }) {
+export function StatusActions({
+  id,
+  format,
+  status,
+  className,
+  onChange,
+}: {
+  id: string;
+  format: ContentFormat;
+  status: ContentStatus;
+  className?: string;
+  onChange?: (status: ContentStatus) => void;
+}) {
   const steps: ContentStatus[] = FILMED_FORMATS.has(format) ? ["filmed", "ready", "published"] : ["ready", "published"];
   const [pending, startTransition] = useTransition();
   const [optimistic, setOptimistic] = useOptimistic(status);
@@ -34,8 +46,9 @@ export function StatusActions({ id, format, status, className }: { id: string; f
                 const next = current ? (order[order.indexOf(step) - 1] as ContentStatus) : step;
                 setOptimistic(next);
                 const result = await setContentStatus(id, next);
-                if (!result.ok) toast.error(result.error);
-                else if (next === "published") toast.success("סומן כפורסם. כל הכבוד 🙂");
+                if (!result.ok) return void toast.error(result.error);
+                onChange?.(next);
+                if (next === "published") toast.success("סומן כפורסם. כל הכבוד 🙂");
               })
             }
             className={cn(
