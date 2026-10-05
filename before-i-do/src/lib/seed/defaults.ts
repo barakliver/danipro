@@ -137,7 +137,7 @@ export const TEMPLATE_SEED: TemplateSeed[] = [
     name: "שאלה אחת",
     formats: ["story"],
     bestUse: "שאלה אחת, הרבה מקום. לסקרים ולתיבות שאלה.",
-    config: { background: "pen" },
+    config: { background: "ink" },
   },
   {
     family: "product_in_life",

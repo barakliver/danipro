@@ -210,6 +210,8 @@ function needsProduct(text: string): boolean {
 // ---------------------------------------------------------------------------
 // story parsing
 
+const GENERIC_INTERACTION = "סקר / תיבת תשובות לפי הנוסח";
+
 /** Lines that describe what to make rather than the words to publish. */
 const BRIEF_STARTERS = [/^וידאו/, /^סטורי המשך/, /^לשתף/, /^מונטאז/, /^צילום/, /^שאלות נפוצות/, /^סטורי\s(?!:)/, /^בחרו טופ/];
 const VIDEO_BRIEF = /^וידאו|^מונטאז|^צילום/;
@@ -477,8 +479,10 @@ export function parsePlan(workbook: WorkbookData): ImportedPlan {
       const d = cellNumber(day(row));
       const text = cellText(textCol(row));
       if (d === null || !text) continue;
-      const interaction = cellText(interactionCol(row));
-      const { frames, instruction } = parseStoryLine(text, interaction === "סקר / תיבת תשובות לפי הנוסח" ? null : interaction);
+      const rawInteraction = cellText(interactionCol(row));
+      // the sheet's generic "poll or answer box, per the copy" is an instruction, not a CTA
+      const interaction = rawInteraction === GENERIC_INTERACTION ? null : rawInteraction;
+      const { frames, instruction } = parseStoryLine(text, interaction);
       const topic = cellText(topicCol(row));
       dailyStories += 1;
       content.push({

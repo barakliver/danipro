@@ -26,10 +26,10 @@ export const designSettingsSchema = z.object({
   /** px at 1080 wide */
   textSizes: z
     .object({
-      xl: z.number().min(40).max(160).default(92),
-      lg: z.number().min(32).max(130).default(72),
-      md: z.number().min(24).max(100).default(56),
-      sm: z.number().min(18).max(70).default(36),
+      xl: z.number().min(40).max(180).default(118),
+      lg: z.number().min(32).max(150).default(94),
+      md: z.number().min(24).max(120).default(72),
+      sm: z.number().min(18).max(80).default(50),
     })
     .prefault({}),
   spacing: z.number().min(40).max(200).default(96),

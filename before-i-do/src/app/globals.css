@@ -121,8 +121,8 @@
       to top,
       transparent 0.08em,
       color-mix(in oklab, var(--color-highlight) 92%, transparent) 0.08em,
-      color-mix(in oklab, var(--color-highlight) 92%, transparent) 0.48em,
-      transparent 0.48em
+      color-mix(in oklab, var(--color-highlight) 92%, transparent) 0.4em,
+      transparent 0.4em
     );
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
