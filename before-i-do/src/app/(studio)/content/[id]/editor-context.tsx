@@ -9,6 +9,7 @@ import type { AssetUrls } from "@/lib/gallery/urls";
 import type { RenderContext } from "@/lib/render/context";
 import type { PillarRef } from "@/lib/content/types";
 import type { Recommendation } from "@/lib/render/recommend";
+import type { RepetitionWarning } from "@/lib/memory/repetition";
 
 // One editor for every content type. Local draft state, debounced autosave of only
 // the fields that changed, and a save indicator that never lies.
@@ -72,6 +73,7 @@ type EditorValue = {
   pillars: PillarRef[];
   recommendations: Recommendation[];
   avoidWords: string[];
+  memoryWarnings: RepetitionWarning[];
 };
 
 const EditorContext = createContext<EditorValue | null>(null);
@@ -114,6 +116,7 @@ export function EditorProvider({
   pillars,
   recommendations,
   avoidWords,
+  memoryWarnings,
   children,
 }: {
   content: Content;
@@ -122,6 +125,7 @@ export function EditorProvider({
   pillars: PillarRef[];
   recommendations: Recommendation[];
   avoidWords: string[];
+  memoryWarnings: RepetitionWarning[];
   children: ReactNode;
 }) {
   const [draft, dispatch] = useReducer(reducer, content, draftFrom);
@@ -234,8 +238,9 @@ export function EditorProvider({
       pillars,
       recommendations,
       avoidWords,
+      memoryWarnings,
     }),
-    [content.id, content.calendar, draft, status, setField, updateBody, replaceDraft, save, flush, render, assetUrls, addAssetUrls, pillars, recommendations, avoidWords],
+    [content.id, content.calendar, draft, status, setField, updateBody, replaceDraft, save, flush, render, assetUrls, addAssetUrls, pillars, recommendations, avoidWords, memoryWarnings],
   );
 
   return <EditorContext value={value}>{children}</EditorContext>;

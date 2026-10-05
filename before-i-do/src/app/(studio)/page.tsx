@@ -5,6 +5,8 @@ import { planToday } from "@/lib/content/today";
 import { getRenderContext } from "@/lib/render/context";
 import { assetIdsInBody, signAssetUrls } from "@/lib/gallery/urls";
 import { todayISO, formatDayLong } from "@/lib/utils/dates";
+import { loadMemory } from "@/lib/memory/load";
+import { repetitionWarnings } from "@/lib/memory/repetition";
 import { TodayView } from "./today-view";
 
 export const metadata: Metadata = { title: "היום" };
@@ -12,7 +14,7 @@ export const metadata: Metadata = { title: "היום" };
 export default async function TodayPage() {
   const studio = await getStudio();
   const today = todayISO();
-  const [items, ideas, render] = await Promise.all([
+  const [items, ideas, render, memory] = await Promise.all([
     listContent(studio),
     studio.supabase
       .from("ideas")
@@ -24,6 +26,7 @@ export default async function TodayPage() {
       .limit(1)
       .then((r) => r.data ?? []),
     getRenderContext(studio),
+    loadMemory(studio),
   ]);
 
   const dayOfYear = Math.floor(Date.parse(today) / 86_400_000);
@@ -35,5 +38,14 @@ export default async function TodayPage() {
     .sort((a, b) => a.calendar!.scheduled_on.localeCompare(b.calendar!.scheduled_on))
     .slice(0, 3);
 
-  return <TodayView dateLabel={formatDayLong(today)} today={today} plan={plan} upcoming={upcoming} render={render} assetUrls={assetUrls} />;
+  const mainItem = "item" in plan.main ? plan.main.item : null;
+  const warnings = mainItem
+    ? repetitionWarnings(
+        { id: mainItem.id, hook: mainItem.hook, topic_tags: mainItem.topic_tags, template_id: mainItem.template_id, assetIds: assetIdsInBody(mainItem.body), day: today, published: false },
+        memory,
+        today,
+      )
+    : [];
+
+  return <TodayView warnings={warnings.map((w) => w.message)} dateLabel={formatDayLong(today)} today={today} plan={plan} upcoming={upcoming} render={render} assetUrls={assetUrls} />;
 }

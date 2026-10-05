@@ -9,6 +9,7 @@ import { detectTopics } from "@/lib/domain/topics";
 import { scoreVoice } from "@/lib/voice/score";
 import { snapshotOf } from "@/lib/content/snapshot";
 import { ProviderRefusal } from "./provider";
+import { scrubPII } from "@/lib/audience/privacy";
 import { attachRecommendations, generateOptions, rewriteDraft, type DraftFields, type GeneratedOption } from "./service";
 
 type Result<T> = { ok: true; data: T } | { ok: false; error: string; needsProvider?: boolean };
@@ -23,6 +24,8 @@ const generateSchema = z.object({
 export async function generate(input: z.input<typeof generateSchema>): Promise<Result<{ options: GeneratedOption[]; providerAvailable: boolean }>> {
   try {
     const clean = generateSchema.parse(input);
+    // audience lines never carry identifying details into generated content
+    if (clean.audienceText) clean.text = scrubPII(clean.text);
     const data = await generateOptions(await getStudio(), clean);
     return { ok: true, data };
   } catch (error) {

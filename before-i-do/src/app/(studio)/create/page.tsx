@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getStudio } from "@/lib/auth/studio";
 import { getRenderContext } from "@/lib/render/context";
 import { CONTENT_FORMATS, type ContentFormat } from "@/lib/domain/constants";
+import { scrubPII } from "@/lib/audience/privacy";
 import { CreateView } from "./create-view";
 
 export const metadata: Metadata = { title: "יצירה" };
@@ -23,7 +24,7 @@ export default async function CreatePage({ searchParams }: { searchParams: Promi
   if (params.audience && /^[0-9a-f-]{36}$/.test(params.audience)) {
     const { data } = await studio.supabase.from("audience_entries").select("id, original_text").eq("workspace_id", ws).eq("id", params.audience).maybeSingle();
     if (data) {
-      initialText = data.original_text;
+      initialText = scrubPII(data.original_text);
       audienceEntryId = data.id;
     }
   }

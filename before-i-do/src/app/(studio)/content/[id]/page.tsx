@@ -6,6 +6,9 @@ import { getRenderContext } from "@/lib/render/context";
 import { assetIdsInBody, signAssetUrls } from "@/lib/gallery/urls";
 import { recommendTemplates } from "@/lib/render/recommend";
 import { loadAvoidList } from "@/lib/voice/brand-words";
+import { loadMemory } from "@/lib/memory/load";
+import { repetitionWarnings } from "@/lib/memory/repetition";
+import { todayISO } from "@/lib/utils/dates";
 import { EditorProvider } from "./editor-context";
 import { EditorShell } from "./editor-shell";
 import { EDITOR_TABS, type EditorTab } from "./tabs";
@@ -20,7 +23,7 @@ export default async function ContentPage({ params, searchParams }: { params: Pr
   const content = await getContent(studio, id);
   if (!content) notFound();
 
-  const [pillars, render, assetUrls, templates, recent, avoidWords] = await Promise.all([
+  const [pillars, render, assetUrls, templates, recent, avoidWords, memory] = await Promise.all([
     listPillars(studio),
     getRenderContext(studio),
     signAssetUrls(studio, assetIdsInBody(content.body)),
@@ -40,7 +43,21 @@ export default async function ContentPage({ params, searchParams }: { params: Pr
       .limit(8)
       .then((r) => (r.data ?? []).map((x) => x.template_id as string)),
     loadAvoidList(studio),
+    loadMemory(studio),
   ]);
+  const warnings = repetitionWarnings(
+    {
+      id: content.id,
+      hook: content.hook,
+      topic_tags: content.topic_tags,
+      template_id: content.template_id,
+      assetIds: assetIdsInBody(content.body),
+      day: content.calendar?.scheduled_on ?? content.published_at?.slice(0, 10) ?? null,
+      published: content.status === "published",
+    },
+    memory,
+    todayISO(),
+  );
 
   const recommendations = recommendTemplates(templates, {
     format: content.format,
@@ -52,7 +69,7 @@ export default async function ContentPage({ params, searchParams }: { params: Pr
   const initialTab: EditorTab = EDITOR_TABS.includes(tab as EditorTab) ? (tab as EditorTab) : "copy";
 
   return (
-    <EditorProvider content={content} render={render} assetUrls={assetUrls} pillars={pillars} recommendations={recommendations} avoidWords={avoidWords}>
+    <EditorProvider content={content} render={render} assetUrls={assetUrls} pillars={pillars} recommendations={recommendations} avoidWords={avoidWords} memoryWarnings={warnings}>
       <EditorShell initialTab={initialTab} title={content.topic} />
     </EditorProvider>
   );

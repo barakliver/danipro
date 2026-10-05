@@ -52,6 +52,7 @@ export function CopyPanel({ onOpenVisual }: { onOpenVisual: () => void }) {
       </Field>
 
       <VoicePanel />
+      <MemoryNotes />
 
       {filmed ? <PovEditor /> : isCarousel ? <SlidesEditor /> : <FramesEditor />}
 
@@ -398,5 +399,19 @@ function IconButton({ label, children, ...props }: React.ButtonHTMLAttributes<HT
     <button type="button" aria-label={label} title={label} className="inline-flex h-11 w-10 items-center justify-center rounded-chip text-graphite hover:bg-paper-deep hover:text-ink disabled:opacity-30" {...props}>
       {children}
     </button>
+  );
+}
+
+function MemoryNotes() {
+  const { memoryWarnings } = useEditor();
+  if (!memoryWarnings.length) return null;
+  return (
+    <ul className="flex flex-col gap-1.5" aria-label="זיכרון תוכן">
+      {memoryWarnings.map((w) => (
+        <li key={w.code + w.message} className="rounded-field bg-highlight-soft px-3 py-2 text-sm text-ink">
+          {w.message} <span className="text-graphite">אפשר לפרסם בכל זאת.</span>
+        </li>
+      ))}
+    </ul>
   );
 }

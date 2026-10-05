@@ -4,6 +4,7 @@ import { BRAND_SECTIONS } from "@/lib/brand/sections";
 import { FEEDBACK_LABEL, type FeedbackKind } from "@/lib/domain/constants";
 import { detectTopics, topicLabel } from "@/lib/domain/topics";
 import { addDays, todayISO } from "@/lib/utils/dates";
+import { scrubPII } from "@/lib/audience/privacy";
 
 export type BrandContext = { text: string; summary: Record<string, number | string[]> };
 
@@ -102,7 +103,7 @@ export async function buildBrandContext(studio: Studio, focusText: string): Prom
     .filter((a) => topics.length === 0 || detectTopics(a.original_text, a.topic).some((t) => topics.includes(t)))
     .slice(0, 6);
   if (relevantAudience.length) {
-    parts.push(`## איך הקהל מדבר על זה (אנונימי, אפשר לשאול שפה, לא לצטט פרטים מזהים)\n${relevantAudience.map((a) => `- "${a.original_text}"`).join("\n")}`);
+    parts.push(`## איך הקהל מדבר על זה (אנונימי, אפשר לשאול שפה, לא לצטט פרטים מזהים)\n${relevantAudience.map((a) => `- "${scrubPII(a.original_text)}"`).join("\n")}`);
   }
 
   parts.push(`## תגיות בגלריה\n${(tags.data ?? []).map((t) => t.name).join(", ")}`);

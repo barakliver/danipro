@@ -22,6 +22,7 @@ import { FormatTag, NeedsList, PillarTag, StatusPill } from "@/components/conten
 import { StatusActions } from "@/components/content/status-actions";
 
 type Props = {
+  warnings: string[];
   dateLabel: string;
   today: string;
   plan: TodayPlan;
@@ -30,7 +31,7 @@ type Props = {
   assetUrls: AssetUrls;
 };
 
-export function TodayView({ dateLabel, today, plan, upcoming, render, assetUrls }: Props) {
+export function TodayView({ warnings, dateLabel, today, plan, upcoming, render, assetUrls }: Props) {
   return (
     <main className="mx-auto max-w-5xl px-4 pt-6 sm:px-6 lg:pt-12">
       <header className="mb-6 lg:mb-10">
@@ -38,7 +39,7 @@ export function TodayView({ dateLabel, today, plan, upcoming, render, assetUrls 
         <h1 className="mt-1 font-display text-3xl font-medium text-ink lg:text-4xl">מה מעלים היום?</h1>
       </header>
 
-      <MainPick plan={plan} render={render} assetUrls={assetUrls} />
+      <MainPick plan={plan} render={render} assetUrls={assetUrls} warnings={warnings} />
 
       {plan.alsoToday.length > 0 && (
         <section className="mt-6" aria-labelledby="also-today">
@@ -78,7 +79,7 @@ export function TodayView({ dateLabel, today, plan, upcoming, render, assetUrls 
   );
 }
 
-function MainPick({ plan, render, assetUrls }: { plan: TodayPlan; render: RenderContext; assetUrls: AssetUrls }) {
+function MainPick({ plan, render, assetUrls, warnings }: { plan: TodayPlan; render: RenderContext; assetUrls: AssetUrls; warnings: string[] }) {
   const main = plan.main;
   if (main.kind === "idea") {
     return (
@@ -113,7 +114,7 @@ function MainPick({ plan, render, assetUrls }: { plan: TodayPlan; render: Render
       : main.kind === "ready"
         ? "לא תוכנן משהו להיום, אז הנה משהו שכבר מוכן"
         : null;
-  return <ContentFocus item={main.item} note={note} render={render} assetUrls={assetUrls} />;
+  return <ContentFocus item={main.item} note={note} render={render} assetUrls={assetUrls} warnings={warnings} />;
 }
 
 function useFrames(item: Content, render: RenderContext, assetUrls: AssetUrls) {
@@ -134,7 +135,7 @@ function storyText(item: Content) {
     .join("\n\n");
 }
 
-function ContentFocus({ item, note, render, assetUrls }: { item: Content; note: string | null; render: RenderContext; assetUrls: AssetUrls }) {
+function ContentFocus({ item, note, render, assetUrls, warnings }: { item: Content; note: string | null; render: RenderContext; assetUrls: AssetUrls; warnings: string[] }) {
   const { frames, docs } = useFrames(item, render, assetUrls);
   const pov = item.body.pov;
   const filmed = FILMED_FORMATS.has(item.format);
@@ -154,6 +155,12 @@ function ContentFocus({ item, note, render, assetUrls }: { item: Content; note: 
             {item.prep_minutes ? <Tag tone="muted">כ־{item.prep_minutes} דק׳ הכנה</Tag> : null}
             <StatusPill status={item.status} className="ms-auto" />
           </div>
+
+          {warnings.map((w) => (
+            <p key={w} className="mt-3 rounded-field bg-highlight-soft px-3 py-1.5 text-sm text-ink">
+              {w}
+            </p>
+          ))}
 
           <h2 id="today-hook" className="mt-5 font-display text-2xl font-medium leading-snug text-ink sm:text-3xl">
             <span className="highlighted">{hook}</span>
