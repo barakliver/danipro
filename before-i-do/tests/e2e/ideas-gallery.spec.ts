@@ -35,6 +35,8 @@ test("Ideas: save a thought fast, filter by tag, open it into content", async ({
 });
 
 test("Gallery: bulk upload with a tag, then filter by smart collection", async ({ page }, testInfo) => {
+  // a stalled upload is retried once after its time budget, so allow for that
+  test.setTimeout(180_000);
   const stamp = Date.now() % 100000;
   const files = await Promise.all(
     ["#c9b8a3", "#7f8fa6"].map(async (color, i) => {
@@ -50,7 +52,7 @@ test("Gallery: bulk upload with a tag, then filter by smart collection", async (
     const sheet = page.getByRole("dialog", { name: "העלאת 2 קבצים" });
     await sheet.getByRole("group", { name: "תגיות לכל ההעלאה" }).getByRole("button", { name: "ברק", exact: true }).click();
     await sheet.getByRole("button", { name: "להעלות" }).click();
-    await expect(page.getByText("2 עלו לגלריה")).toBeVisible({ timeout: 60_000 });
+    await expect(page.getByText("2 עלו לגלריה")).toBeVisible({ timeout: 120_000 });
 
     await page.getByRole("group", { name: "אוספים" }).getByRole("button", { name: "עם ברק" }).click();
     const grid = page.getByRole("list", { name: "תמונות" });

@@ -7,6 +7,20 @@ const BUCKET = "gallery";
 const ACCEPTED = /^(image\/(jpeg|png|webp|heic|heif|avif|gif)|video\/(mp4|quicktime|webm))$/;
 const MAX_BYTES = 200 * 1024 * 1024;
 
+/** Phones drop connections; a stalled upload should fail (or retry) instead of spinning forever. */
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error("ההעלאה נתקעה")), ms);
+    promise.then(
+      (value) => (clearTimeout(timer), resolve(value)),
+      (error) => (clearTimeout(timer), reject(error)),
+    );
+  });
+}
+
+// generous for slow mobile data: 30s plus ~50KB/s
+const uploadBudget = (bytes: number) => 30_000 + bytes / 50;
+
 export type UploadProgress = { done: number; total: number; failed: string[] };
 
 function extension(file: File) {
@@ -67,8 +81,19 @@ export async function uploadToGallery(
         if (file.size > MAX_BYTES) throw new Error("קובץ גדול מדי");
         const id = crypto.randomUUID();
         const storagePath = `${workspaceId}/${id}/original.${extension(file)}`;
-        const { error } = await supabase.storage.from(BUCKET).upload(storagePath, file, { contentType: file.type, upsert: false });
-        if (error) throw error;
+        let lastError: unknown = null;
+        for (let attempt = 0; attempt < 2; attempt++) {
+          try {
+            // a retry may overwrite a half-finished first attempt at the same path
+            const { error } = await withTimeout(supabase.storage.from(BUCKET).upload(storagePath, file, { contentType: file.type, upsert: attempt > 0 }), uploadBudget(file.size));
+            if (error) throw error;
+            lastError = null;
+            break;
+          } catch (error) {
+            lastError = error;
+          }
+        }
+        if (lastError) throw lastError;
 
         const isVideo = file.type.startsWith("video/");
         let posterPath: string | undefined;

@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:e2e": "playwright test",
+    "test:e2e": "NODE_EXTRA_CA_CERTS=${NODE_EXTRA_CA_CERTS:-} playwright test",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
