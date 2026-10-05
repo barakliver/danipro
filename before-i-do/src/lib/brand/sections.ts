@@ -1,0 +1,20 @@
+export const BRAND_SECTIONS = [
+  { key: "permanent_rules", label: "ההוראה הקבועה", hint: "מה תמיד נכון, בכל תוכן." },
+  { key: "who_we_are", label: "מי אנחנו", hint: "" },
+  { key: "audience", label: "למי אנחנו מדברים", hint: "" },
+  { key: "product", label: "המוצר", hint: "" },
+  { key: "founder_story", label: "הסיפור של ברק", hint: "" },
+  { key: "personal_context", label: "מה קורה אצלנו עכשיו", hint: "רק דברים שקרו באמת. מכאן בלבד מותר לספר סיפור אישי." },
+  { key: "tone", label: "הקול", hint: "" },
+  { key: "good_examples", label: "דוגמאות טובות", hint: "משפטים שהם בדיוק אנחנו." },
+  { key: "bad_examples", label: "דוגמאות רעות", hint: "מה שמותג אחר היה כותב." },
+  { key: "words_we_use", label: "מילים שלנו", hint: "" },
+  { key: "words_we_avoid", label: "מילים שאנחנו לא אומרים", hint: "מופרדות בנקודה או פסיק. הבודק מזהה אותן." },
+  { key: "recurring_topics", label: "נושאים שחוזרים", hint: "" },
+  { key: "visual_principles", label: "עקרונות ויזואליים", hint: "" },
+  { key: "product_facts", label: "עובדות על המוצר", hint: "" },
+  { key: "faqs", label: "שאלות נפוצות", hint: "" },
+  { key: "audience_language", label: "שפת הקהל", hint: "משפטים שזוגות כתבו לנו. גם מהמסך 'הקהל'." },
+  { key: "successful_content", label: "תוכן שעבד", hint: "מה שאנשים שלחו, שמרו או ענו עליו." },
+] as const;
+export type BrandSectionKey = (typeof BRAND_SECTIONS)[number]["key"];
