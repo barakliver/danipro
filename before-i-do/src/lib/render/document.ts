@@ -238,16 +238,16 @@ function photoFamily(input: RenderInput, product: boolean): Parts {
   const position = cfg<string>(input.config, "textPosition", product ? "top" : "bottom") as "top" | "bottom";
   const scrim = cfg<string>(input.config, "scrim", "soft");
   const step = sizeStep(frame.text);
-  const shade = scrim === "none" ? "transparent" : scrim === "strong" ? "rgba(0,0,0,.62)" : "rgba(0,0,0,.42)";
+  const shade = scrim === "none" ? "transparent" : scrim === "strong" ? "rgba(0,0,0,.7)" : "rgba(0,0,0,.55)";
   const gradient =
     position === "top"
-      ? `linear-gradient(to bottom, ${shade} 0%, transparent 46%)`
-      : `linear-gradient(to top, ${shade} 0%, transparent 52%)`;
+      ? `linear-gradient(to bottom, ${shade} 0%, ${shade} 18%, transparent 58%)`
+      : `linear-gradient(to top, ${shade} 0%, ${shade} 22%, transparent 62%)`;
   return {
     css: `body{background:#2a2a2a;color:#fff}
       .scrim{position:absolute;inset:0;background:${gradient}}
       .safe{justify-content:${position === "top" ? "flex-start" : "flex-end"}}
-      .copy{text-shadow:0 2px 24px rgba(0,0,0,.28)}
+      .copy{text-shadow:0 2px 28px rgba(0,0,0,.45),0 1px 3px rgba(0,0,0,.35)}
       .sub{color:rgba(255,255,255,.82)}
       .ident{color:rgba(255,255,255,.72);${position === "bottom" ? "bottom:auto;top:calc(var(--safe-top) * .55)" : ""}}
       .no-photo{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(135deg,#3a3a3a 0 40px,#343434 40px 80px);color:rgba(255,255,255,.55);font-size:36px;font-family:var(--text)}`,

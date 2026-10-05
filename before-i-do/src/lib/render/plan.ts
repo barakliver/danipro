@@ -27,6 +27,18 @@ export function defaultFamilyForFrame(frame: Pick<StoryFrame, "kind">, hasPhoto:
   return "text_message";
 }
 
+/**
+ * A piece-level template only applies where it makes sense: the question card is for
+ * interactive frames, photo templates need a photo. A per-frame choice always wins.
+ */
+function familyFits(family: TemplateFamily, kind: StoryFrame["kind"], hasPhoto: boolean, explicit: boolean): boolean {
+  if (explicit) return true;
+  const interactive = kind === "poll" || kind === "question" || kind === "slider";
+  if (family === "question") return interactive;
+  if (family === "real_photo" || family === "product_in_life") return hasPhoto;
+  return true;
+}
+
 export function hasGraphics(format: ContentFormat): boolean {
   return ["story", "story_sequence", "carousel", "question", "poll", "post"].includes(format);
 }
@@ -74,7 +86,9 @@ export function planFrames(
       const imageUrl = frame.assetId ? (assetUrl(frame.assetId) ?? null) : null;
       const chosen = frame.templateId ? byId.get(frame.templateId) : pieceTemplate;
       let family: TemplateFamily =
-        chosen && isTemplateFamily(chosen.family) ? chosen.family : defaultFamilyForFrame(frame, Boolean(imageUrl));
+        chosen && isTemplateFamily(chosen.family) && familyFits(chosen.family, frame.kind, Boolean(imageUrl), Boolean(frame.templateId))
+          ? chosen.family
+          : defaultFamilyForFrame(frame, Boolean(imageUrl));
       if (family === "carousel_editorial") family = "text_message";
       return {
         key: frame.id,

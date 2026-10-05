@@ -40,3 +40,27 @@ describe("renderDocument", () => {
     expect(escapeHtml(`"'&`)).toBe("&quot;&#39;&amp;");
   });
 });
+
+import { planFrames } from "@/lib/render/plan";
+
+describe("planFrames template fit", () => {
+  const templates = [{ id: "q", family: "question", name: "q", config: {} }, { id: "p", family: "real_photo", name: "p", config: {} }];
+  it("uses a piece-level question template only on interactive frames", () => {
+    const frames = planFrames(
+      { format: "story_sequence", hook: null, template_id: "q", body: { frames: [{ id: "1", kind: "text", text: "משפט" }, { id: "2", kind: "poll", text: "מה עושים?" }] } },
+      templates,
+      settings,
+      () => null,
+    );
+    expect(frames.map((f) => f.input.family)).toEqual(["text_message", "question"]);
+  });
+  it("only uses a photo template where there is a photo", () => {
+    const frames = planFrames(
+      { format: "story", hook: null, template_id: "p", body: { frames: [{ id: "1", kind: "text", text: "בלי תמונה" }, { id: "2", kind: "photo", text: "עם", assetId: "a" }] } },
+      templates,
+      settings,
+      (id) => (id === "a" ? "data:image/png;base64,AA" : null),
+    );
+    expect(frames.map((f) => f.input.family)).toEqual(["text_message", "real_photo"]);
+  });
+});
