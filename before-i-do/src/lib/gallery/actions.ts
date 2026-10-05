@@ -52,31 +52,37 @@ export async function registerUploadedAsset(input: z.input<typeof registerSchema
     let previewPath: string | null = clean.posterPath ?? null;
 
     if (clean.mediaType === "image") {
-      const { data: blob, error: downloadError } = await supabase.storage.from(BUCKET).download(clean.storagePath);
-      if (downloadError) throw downloadError;
-      const original = Buffer.from(await blob.arrayBuffer());
-      const rotated = sharp(original, { failOn: "none" }).rotate();
-      const meta = await rotated.metadata();
-      // metadata() reports pre-rotation size; swap for 90° EXIF orientations
-      const swap = (meta.orientation ?? 1) >= 5;
-      width = (swap ? meta.height : meta.width) ?? width;
-      height = (swap ? meta.width : meta.height) ?? height;
+      try {
+        const { data: blob, error: downloadError } = await supabase.storage.from(BUCKET).download(clean.storagePath);
+        if (downloadError) throw downloadError;
+        const original = Buffer.from(await blob.arrayBuffer());
+        const meta = await sharp(original, { failOn: "none" }).metadata();
+        // metadata() reports pre-rotation size; swap for 90° EXIF orientations
+        const swap = (meta.orientation ?? 1) >= 5;
+        width = (swap ? meta.height : meta.width) ?? width;
+        height = (swap ? meta.width : meta.height) ?? height;
 
-      const [thumb, preview] = await Promise.all([
-        sharp(original, { failOn: "none" }).rotate().resize({ width: THUMB_WIDTH, withoutEnlargement: true }).webp({ quality: 76 }).toBuffer(),
-        sharp(original, { failOn: "none" })
-          .rotate()
-          .resize({ width: PREVIEW_EDGE, height: PREVIEW_EDGE, fit: "inside", withoutEnlargement: true })
-          .webp({ quality: 86 })
-          .toBuffer(),
-      ]);
-      thumbPath = `${ws}/${clean.id}/thumb.webp`;
-      previewPath = `${ws}/${clean.id}/preview.webp`;
-      const uploads = await Promise.all([
-        supabase.storage.from(BUCKET).upload(thumbPath, thumb, { contentType: "image/webp", upsert: true }),
-        supabase.storage.from(BUCKET).upload(previewPath, preview, { contentType: "image/webp", upsert: true }),
-      ]);
-      for (const u of uploads) if (u.error) throw u.error;
+        const [thumb, preview] = await Promise.all([
+          sharp(original, { failOn: "none" }).rotate().resize({ width: THUMB_WIDTH, withoutEnlargement: true }).webp({ quality: 76 }).toBuffer(),
+          sharp(original, { failOn: "none" })
+            .rotate()
+            .resize({ width: PREVIEW_EDGE, height: PREVIEW_EDGE, fit: "inside", withoutEnlargement: true })
+            .webp({ quality: 86 })
+            .toBuffer(),
+        ]);
+        const nextThumb = `${ws}/${clean.id}/thumb.webp`;
+        const nextPreview = `${ws}/${clean.id}/preview.webp`;
+        const uploads = await Promise.all([
+          supabase.storage.from(BUCKET).upload(nextThumb, thumb, { contentType: "image/webp", upsert: true }),
+          supabase.storage.from(BUCKET).upload(nextPreview, preview, { contentType: "image/webp", upsert: true }),
+        ]);
+        for (const u of uploads) if (u.error) throw u.error;
+        thumbPath = nextThumb;
+        previewPath = nextPreview;
+      } catch (processingError) {
+        // e.g. HEIC without a decoder: keep the original, show it without a thumbnail
+        console.warn("gallery: could not create previews", processingError);
+      }
     }
 
     const orientation = width && height ? orientationOf(width, height) : null;
@@ -196,6 +202,27 @@ export async function signAssets(ids: string[]): Promise<Result<AssetUrls>> {
   try {
     z.array(z.uuid()).max(60).parse(ids);
     return { ok: true, data: await signAssetUrls(await getStudio(), ids) };
+  } catch (error) {
+    return fail(error);
+  }
+}
+
+/** Where an asset was used: content items with format, status and date. */
+export async function assetUsage(id: string): Promise<Result<Array<{ id: string; title: string; format: string; status: string; published_at: string | null }>>> {
+  try {
+    z.uuid().parse(id);
+    const { supabase, workspace } = await getStudio();
+    const { data, error } = await supabase
+      .from("content_assets")
+      .select("content:content_items(id, hook, topic, format, status, published_at, deleted_at)")
+      .eq("workspace_id", workspace.id)
+      .eq("asset_id", id);
+    if (error) throw error;
+    const seen = new Set<string>();
+    const rows = (data as unknown as Array<{ content: { id: string; hook: string | null; topic: string | null; format: string; status: string; published_at: string | null; deleted_at: string | null } | null }>)
+      .map((r) => r.content)
+      .filter((c): c is NonNullable<typeof c> => Boolean(c) && !c!.deleted_at && !seen.has(c!.id) && Boolean(seen.add(c!.id)));
+    return { ok: true, data: rows.map((c) => ({ id: c.id, title: c.hook || c.topic || "בלי כותרת", format: c.format, status: c.status, published_at: c.published_at })) };
   } catch (error) {
     return fail(error);
   }

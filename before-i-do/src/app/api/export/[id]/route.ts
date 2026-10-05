@@ -3,7 +3,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getStudio } from "@/lib/auth/studio";
 import { getContent } from "@/lib/content/queries";
 import { getRenderContext } from "@/lib/render/context";
-import { assetIdsInBody, signAssetUrls } from "@/lib/gallery/urls";
+import { assetIdsInBody } from "@/lib/gallery/urls";
+import { embedAssets } from "@/lib/gallery/embed";
 import { documentsFor, planFrames } from "@/lib/render/plan";
 import { canvasSize } from "@/lib/render/document";
 import { inlineFontCss, renderPngs, serverRenderAvailable } from "@/lib/render/server-render";
@@ -26,8 +27,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
   const content = await getContent(studio, id);
   if (!content) return NextResponse.json({ error: "not found" }, { status: 404 });
 
-  const [render, urls] = await Promise.all([getRenderContext(studio), signAssetUrls(studio, assetIdsInBody(content.body))]);
-  let frames = planFrames(content, render.templates, render.settings, (assetId) => urls[assetId]?.original ?? urls[assetId]?.preview);
+  const [render, photos] = await Promise.all([getRenderContext(studio), embedAssets(studio, assetIdsInBody(content.body))]);
+  let frames = planFrames(content, render.templates, render.settings, (assetId) => photos[assetId]);
   const frameKey = request.nextUrl.searchParams.get("frame");
   if (frameKey) frames = frames.filter((f) => f.key === frameKey);
   if (!frames.length) return NextResponse.json({ error: "אין מה לייצא. צריך טקסט לפחות בפריים אחד." }, { status: 422 });

@@ -254,7 +254,7 @@ function SlidesEditor() {
           {slides.length} שקפים (בין {CAROUSEL_MIN_SLIDES} ל־{CAROUSEL_MAX_SLIDES})
         </span>
       </div>
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+      <DndContext id="slides-dnd" sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
         <SortableContext items={slides.map((s) => s.id)} strategy={verticalListSortingStrategy}>
           <ol className="flex flex-col gap-3">
             {slides.map((slide, index) => (
