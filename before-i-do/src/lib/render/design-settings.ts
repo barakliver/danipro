@@ -40,6 +40,13 @@ export const designSettingsSchema = z.object({
   carouselSafe: z.object({ top: z.number().default(110), bottom: z.number().default(130), side: z.number().default(96) }).prefault({}),
   identifier: z.object({ show: z.boolean().default(true), text: z.string().default("Before I Do") }).prefault({}),
   logoPath: z.string().nullable().default(null),
+  /** small PNG made on the server from the uploaded logo (never raw SVG), so preview and export match */
+  logo: z
+    .string()
+    .max(400_000)
+    .regex(/^data:image\/png;base64,[A-Za-z0-9+/=]+$/)
+    .nullable()
+    .default(null),
 });
 
 export type DesignSettings = z.infer<typeof designSettingsSchema>;

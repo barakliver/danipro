@@ -114,6 +114,7 @@ body{
 .size-sm{font-size:var(--sm);line-height:1.38}
 .sub{font-family:var(--text);font-size:calc(var(--sm) * 0.9);color:var(--muted);margin-top:28px;line-height:1.4;unicode-bidi:plaintext}
 .ident{position:absolute;inset-inline-start:var(--safe-side);bottom:calc(var(--safe-bottom) * 0.42);font-family:var(--display);font-size:34px;letter-spacing:0.01em;color:var(--muted);direction:ltr}
+.ident-logo{height:64px;width:auto;max-width:360px;object-fit:contain}
 .photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:${IMAGE_FILTER[s.imageTreatment]}}
 .sticker-space{margin-top:56px;min-height:280px;border-radius:calc(var(--radius) * 0.9)}
 .guide .sticker-space{border:4px dashed color-mix(in srgb,var(--muted) 60%,transparent);display:flex;align-items:center;justify-content:center;font-size:32px;color:var(--muted);font-family:var(--text)}
@@ -313,6 +314,10 @@ export function renderDocument(input: RenderInput): string {
     settings.identifier.show && family !== "carousel_editorial" && !(family === "question" && input.frame.kind === "question");
   return `<!doctype html><html lang="he" dir="rtl"><head><meta charset="utf-8"><style>${baseCss(input)}${parts.css}</style></head>
 <body class="${input.guides ? "guide" : ""}"><div class="canvas">${parts.body}${
-    showIdent ? `<div class="ident">${escapeHtml(settings.identifier.text)}</div>` : ""
+    showIdent
+      ? settings.logo
+        ? `<img class="ident ident-logo" src="${settings.logo}" alt="">`
+        : `<div class="ident">${escapeHtml(settings.identifier.text)}</div>`
+      : ""
   }${input.guides ? `<div class="safe-outline"></div>` : ""}</div></body></html>`;
 }
